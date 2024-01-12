@@ -170,8 +170,7 @@ xs= seq(0,20,l=1000)
 plot( xs, dinvgamma(xs, 0.1, 0.1), type="l" )
 
 #1/11/2024------------------------------
-
-
+#MH using trunced T
 
 
 
