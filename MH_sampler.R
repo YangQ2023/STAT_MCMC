@@ -144,7 +144,7 @@ var(beta[,1])
 beta_2_MH<-hist(beta[,2],freq=F)
 acf(beta[,2])
 beta_3_MH<-hist(beta[,3],freq=F,xlim=c(0,1.5))
-acf(beta[,3])
+
 
 plot( beta_1, col=rgb(0,0,1,1/4), xlim=c(-4,4))  # first histogram
 plot( beta_1_MH, col=rgb(1,0,0,1/4), xlim=c(-4,4), add=TRUE)  
@@ -169,7 +169,7 @@ xs= seq(0,20,l=1000)
 plot( xs, dinvgamma(xs, 0.1, 0.1), type="l" )
 
 #1/11/2024------------------------------
-print("make some changes")
+print("hello world")
 
 
 
