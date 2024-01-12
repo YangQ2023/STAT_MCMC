@@ -164,6 +164,7 @@ hist(beta[,3], freq=F, col=rgb(1,0,0,1/4), xlim=c(0,2), add=TRUE)
 
 library(invgamma)#install.packages("invgamma")
 dev.off()
+?dev.off()
 xs= seq(0,20,l=1000)
 
 plot( xs, dinvgamma(xs, 0.1, 0.1), type="l" )
