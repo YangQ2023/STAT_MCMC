@@ -100,12 +100,9 @@ beta_3<-hist(sample_beta_1[,3],freq=F)
 install.packages("mvtnorm")
 install.packages("ggplot2")
 library("mvtnorm")
-mean<-rep(0,3)
 burnin = 500
 thin = 50
 n = 5000*thin
-
-
 beta_post_sample <- matrix(0, nrow = n/thin, ncol = 3)
 beta_old = as.vector( gamma )
 counter = 1
