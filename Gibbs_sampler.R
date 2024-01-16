@@ -42,7 +42,6 @@ omega<-solve((diag(3)+(1/sigma2)*t(x)%*%x))
 #initial values j[0]
 
 
-
 #Gibbs algorithms 
 for(j in 2:(J+n+1)) {
   x.seq[j] <- rbinom(1, N.seq[j-1], p.seq[j -1])
