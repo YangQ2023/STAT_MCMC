@@ -84,8 +84,8 @@ y<-x%*%beta+eps
 
 #1) directly generate 10,000 beta value from posterior disbribution
 sigma2 <- 1
-gamma<-solve((diag(3)+(1/sigma2)*t(x)%*%x))%*%t(x)%*%y
-omega<-solve((diag(3)+(1/sigma2)*t(x)%*%x))
+gamma<-solve(diag(3)+(1/sigma2)*t(x)%*%x)%*%t(x)%*%y
+omega<-solve(diag(3)+(1/sigma2)*t(x)%*%x)
 library(MASS)
 sample_beta_1<-mvrnorm(n = 10000,mu = gamma,Sigma = omega) 
 par(mfrow=c(1 ,3))
