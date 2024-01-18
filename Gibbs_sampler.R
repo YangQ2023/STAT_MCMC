@@ -33,17 +33,29 @@ eps<-matrix(rnorm(100),nrow =100, ncol=1)
 beta <- matrix(c(1, 2, 0.5), ncol = 1)
 y<-x%*%beta+eps
 
-#computation steps prepare for prior beta and sigma2
-sigma2 <- 1
-gamma<-solve((diag(3)+(1/sigma2)*t(x)%*%x))%*%t(x)%*%y
-omega<-solve((diag(3)+(1/sigma2)*t(x)%*%x))
-
-
-#initial values j[0]
-
 
 #Gibbs algorithms 
-for(j in 2:(J+n+1)) {
+n=5000
+sigma2_Gibbs_sample=rep(0, l=n)
+beta_Gibbs_sample<- matrix(0, nrow =n, ncol = 3)
+
+
+#computation steps prepare for prior beta and sigma2
+sample_size=100
+alpha=0.1
+beta_prime=0.1
+set.seed(2)
+sigma2[1] <- rinvgamma(1,0.1,0.1)
+dim(beta)
+beta_Gibbs_sample[1,]<-beta
+dim(beta_Gibbs_sample[1,])
+gamma[1]<-solve((diag(3)+(1/sigma2[1])*t(x)%*%x))%*%t(x)%*%y
+omega[1]<-solve((diag(3)+(1/sigma2[1])*t(x)%*%x))
+a[1]=sample_size/2+alpha
+b[1]=(t(y-x%*%beta_Gibbs_sample[1,])%%(y-x%*%beta_Gibbs_sample[1,]))/2+beta_prime
+
+#Loop structure for gibbs sampling interations  
+for(j in 2:5000) {
   x.seq[j] <- rbinom(1, N.seq[j-1], p.seq[j -1])
   p.seq[j] <- rbeta(1, (x.seq[j] + 2),
                     (N.seq[j -1] - x.seq[j] + 4))
