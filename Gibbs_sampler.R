@@ -23,9 +23,9 @@ hist(mysamples$p)
 hist(mysamples$N)
 
 #1/11/2024_________________________________________________________________________________________________________
-# data preprocessing steps......
+# data prepare steps......
 install.packages("dplyr")
-set.seed(1)
+set.seed(100)
 x1<-matrix(c(rep(1, 100)), ncol=1)
 x2_x3 <- matrix(rnorm(200), nrow = 100, ncol = 2)
 x <- cbind(x1, x2_x3)
@@ -33,33 +33,64 @@ eps<-matrix(rnorm(100),nrow =100, ncol=1)
 beta <- matrix(c(1, 2, 0.5), ncol = 1)
 y<-x%*%beta+eps
 
+#create vector list for gibbs sampling
+burnin= 500
+thin = 50
+n = 5000*thin
+beta_Gibbs_sample= matrix(0, nrow =n, ncol = 3)
+sigma2_Gibbs_sample=rep(0, l=n)
+
+#create list for gamma (vector) and omega(matrtix)
+gamma= matrix(0, nrow =n, ncol = 3)
+omega= replicate(n,matrix(0, nrow =3, ncol = 3))
+
+
+#create vector list for parameters a and b in inverse_gamma distribution.....
+a=rep(0, l=n)
+b=rep(0, l=n)
+
+
+#computation to prepare for prior beta and sigma2
+library("stats")
+sample_size=100 # sample sizes from data
+alpha=0.1 # parameters for prior sigma2's inverse_gamma
+beta_prime=0.1 # parameters for prior sigma2's inverse_gamma
+set.seed(1)
+sigma2_Gibbs_sample[1]=rinvgamma(1,0.1,0.1) #initial values
+beta_Gibbs_sample[1,]<-beta #initial values
+gamma[1,]<-solve(diag(3)+(1/sigma2_Gibbs_sample[1])*t(x)%*%x)%*%t(x)%*%y
+dim(as.vector(gamma[1,]))
+omega[,,1]<-matrix(solve((diag(3)+(1/sigma2_Gibbs_sample[1])*t(x)%*%x)))
+a[1]=sample_size/2+alpha
+b[1]=(t(y-x%*%as.matrix(beta_Gibbs_sample[1,])))%*%(y-x%*%as.matrix(beta_Gibbs_sample[1,]))/2 + beta_prime
+
 
 #Gibbs algorithms 
-n=5000
-sigma2_Gibbs_sample=rep(0, l=n)
-beta_Gibbs_sample<- matrix(0, nrow =n, ncol = 3)
-
-
-#computation steps prepare for prior beta and sigma2
-sample_size=100
-alpha=0.1
-beta_prime=0.1
-set.seed(2)
-sigma2[1] <- rinvgamma(1,0.1,0.1)
-dim(beta)
-beta_Gibbs_sample[1,]<-beta
-dim(beta_Gibbs_sample[1,])
-gamma[1]<-solve((diag(3)+(1/sigma2[1])*t(x)%*%x))%*%t(x)%*%y
-omega[1]<-solve((diag(3)+(1/sigma2[1])*t(x)%*%x))
-a[1]=sample_size/2+alpha
-b[1]=(t(y-x%*%beta_Gibbs_sample[1,])%%(y-x%*%beta_Gibbs_sample[1,]))/2+beta_prime
-
-#Loop structure for gibbs sampling interations  
-for(j in 2:5000) {
-  x.seq[j] <- rbinom(1, N.seq[j-1], p.seq[j -1])
-  p.seq[j] <- rbeta(1, (x.seq[j] + 2),
-                    (N.seq[j -1] - x.seq[j] + 4))
-  N.seq[j] <- rpois(1, 16 * (1 - p.seq[j])) + x.seq[j]
+for(j in 1:burnin + n) {
+  gamma[j-1,]<-solve(diag(3)+(1/sigma2_Gibbs_sample[j-1])*t(x)%*%x)%*%t(x)%*%y
+  omega[,,j-1]<-solve((diag(3)+(1/sigma2_Gibbs_sample[j-1])*t(x)%*%x))
+  beta_Gibbs_sample[j,] <- as.vector(mvrnorm(n = 1,mu = gamma[j-1,],Sigma = omega[,,j-1]))
+  a[j]=sample_size/2+alpha
+  b[j]=(t(y-x%*%as.matrix(beta_Gibbs_sample[j,])))%*%(y-x%*%as.matrix(beta_Gibbs_sample[j,]))/2 + beta_prime
+  sigma2_Gibbs_sample[j]<-rinvgamma(1,a[j],b[j])
+  
+  #adding burnin and thin steps in gibbs sampling
+  if( j > burnin & (j%%thin) == 0){
+    # save new sample
+    beta_Gibbs_sample[counter,] = beta_new_gibbs
+    counter = counter + 1
+    sigma2_Gibbs_sample[counter] = sigma2_new_gibbs
+    counter = counter + 1
+  }
 }
+
+
+
+sigma2_Gibbs_sample
+acf(sigma2_Gibbs_sample)
+hist(sigma2_Gibbs_sample,freq=F)
+hist(beta_Gibbs_sample[,3],freq=F)
+acf(beta_Gibbs_sample[,3])
+beta_Gibbs_sample
 
 
