@@ -47,13 +47,7 @@ library("stats")
 sample_size=100 # sample sizes from data
 alpha=0.1 # parameters for prior sigma2's inverse_gamma
 beta_prime=0.1 # parameters for prior sigma2's inverse_gamma
-set.seed(1)
 
-#gamma[1,]<-solve(diag(3)+1/sigma2_Gibbs_sample[1]*t(x)%*%x)%*%t(x)%*%y
-#omega[,,1]<-matrix(solve((diag(3)+1/sigma2_Gibbs_sample[1]*t(x)%*%x)))
-#a[1]=sample_size/2+alpha
-#b[1]=(t(y-x%*%as.matrix(beta_Gibbs_sample[1,])))%*%(y-x%*%as.matrix(beta_Gibbs_sample[1,]))/2 + beta_prime
-#library(mvtnorm)
 sigma2_new_gibbs=1
 counter=1
 
@@ -71,7 +65,7 @@ for(j in 2:(burnin + n) ) {
   sigma2_new_gibbs <- 1/rgamma(1, shape = a, rate = b)
   
   #1/rgamma(1, shape = a, rate = b)
-  #rinvgamma(1, shape = a, rate = b)
+  #rinvgamma(1,  shape= a,rate= b)
   
   
   #adding burnin and thin steps in gibbs sampling
