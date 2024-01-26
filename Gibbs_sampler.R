@@ -30,7 +30,7 @@ set.seed(100)
 x1<-matrix(c(rep(1, 100)), ncol=1)
 x2_x3 <- matrix(rnorm(200), nrow = 100, ncol = 2)
 x <- cbind(x1, x2_x3)
-eps < -matrix(rnorm(100),nrow =100, ncol=1)
+eps < - matrix(rnorm(100),nrow =100, ncol=1)
 beta <- matrix(c(1, 2, 0.5), ncol = 1)
 y <- x%*%beta + eps
 
@@ -42,12 +42,11 @@ beta_Gibbs_sample= matrix(0, nrow =n/thin, ncol = 3)
 sigma2_Gibbs_sample=rep(0, l=n/thin)
 
 
-#computation to prepare for prior beta and sigma2
+#assign values for parameters 
 library("stats")
 sample_size=100 # sample sizes from data
 alpha=0.1 # parameters for prior sigma2's inverse_gamma
 beta_prime=0.1 # parameters for prior sigma2's inverse_gamma
-
 sigma2_new_gibbs=1
 counter=1
 
@@ -76,7 +75,7 @@ for(j in 2:(burnin + n) ) {
     counter = counter + 1
   }
 }
-#--------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
 par(mfrow=c(1,3))
 hist(beta_Gibbs_sample[,1])
 hist(beta_Gibbs_sample[,2])
@@ -86,14 +85,13 @@ acf(sigma2_Gibbs_sample )
 mean(sigma2_Gibbs_sample)
 hist(sigma2_Gibbs_sample,freq=F)
 
-?rinvgamma
 
 
 plot(sigma2_Gibbs_sample)
 hist(sigma2_Gibbs_sample,freq=F)
 
-plot(gamma[,1] )
-plot(gamma[,2] )
+
+plot(gamma)
 
 sigma2_Gibbs_sample
 acf(sigma2_Gibbs_sample)
