@@ -53,22 +53,26 @@ set.seed(1)
 #omega[,,1]<-matrix(solve((diag(3)+1/sigma2_Gibbs_sample[1]*t(x)%*%x)))
 #a[1]=sample_size/2+alpha
 #b[1]=(t(y-x%*%as.matrix(beta_Gibbs_sample[1,])))%*%(y-x%*%as.matrix(beta_Gibbs_sample[1,]))/2 + beta_prime
-
+#library(mvtnorm)
 sigma2_new_gibbs=1
 counter=1
 
 #Gibbs algorithms 
 for(j in 2:(burnin + n) ) {
-  omega[,,j-1] <- solve( diag(3) + t(x)%*%x/sigma2_new_gibbs )
-  gamma[j-1,]  <- omega[,,j-1] %*% t(x) %*% y
+  omega <- solve( diag(3) + t(x)%*%x/sigma2_new_gibbs )
+  gamma  <- omega %*% t(x) %*% y/sigma2_new_gibbs
   
   #beta's full conditional density 
-  beta_new_gibbs <- as.vector(mvrnorm(n = 1,mu = gamma[j-1,], Sigma = omega[,,j-1]))
-  a[j] = sample_size/2 + alpha
+  beta_new_gibbs <- as.vector(mvrnorm(n = 1,mu = gamma, Sigma = omega))
+  a = sample_size/2 + alpha
   e = y - x%*%as.matrix(beta_new_gibbs)
-  b[j] = crossprod(e)/2 + beta_prime
+  b = as.numeric( crossprod(e)/2 + beta_prime )
   #sigma2's full conditional density
-  sigma2_new_gibbs <- rinvgamma(1, shape = a[j], scale = b[j])
+  sigma2_new_gibbs <- 1/rgamma(1, shape = a, rate = b)
+  
+  #1/rgamma(1, shape = a, rate = b)
+  #rinvgamma(1, shape = a, rate = b)
+  
   
   #adding burnin and thin steps in gibbs sampling
   if( j > burnin & (j%%thin) == 0){
@@ -79,10 +83,16 @@ for(j in 2:(burnin + n) ) {
   }
 }
 #--------------------------------------------------------------------------------
+par(mfrow=c(1,3))
 hist(beta_Gibbs_sample[,1])
 hist(beta_Gibbs_sample[,2])
 hist(beta_Gibbs_sample[,3])
 
+acf(sigma2_Gibbs_sample )
+mean(sigma2_Gibbs_sample)
+hist(sigma2_Gibbs_sample,freq=F)
+
+?rinvgamma
 
 
 plot(sigma2_Gibbs_sample)
