@@ -238,37 +238,39 @@ for (j in 2:(burnin + n) ){
   alpha <- min( den_new_1/den_old_1, 1)
   
   if(runif(1)<=alpha){
-    beta_new_1 <- Y_1
+    beta_new_MH <- Y_1
   }else{
-    beta_new_1 <- beta_old_1
+    beta_new_MH <- beta_old_MH
   }
   
   # sigma2 (log-transformed) part
-  a[1]=sample_size/2+alpha
-  b[1]=(t(y-x%*%as.vector(beta_new_1[1,])))%*%(y-x%*%as.vector(beta_new_1[1,]))/2 + beta_prime
+  a = sample_size/2 + alpha
+  e = y - x%*%as.matrix(beta_new_MH)
+  b = as.numeric( crossprod(e)/2 + beta_prime )
   
   #proposal from univariate truncated student t distribution for log-transformed sigma2
   Y_2 <- rtt(1,location=logsigma2_old, scale=1)
                    
   # density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
-  den_new_2 = dinvgamma(Y_2, a[j], b[j])*exp(Y_2) # add jacobian adjustment term for the target density
-  den_old_2 = dinvgamma(logsigma2_old,a[j],b[j])*exp(logsigma2_old) # add jacobian adjustment term for the target density
+  den_new_2 = dinvgamma(Y_2, shape=a, rate=b)*exp(Y_2) # add jacobian adjustment term for the target density
+  den_old_2 = dinvgamma(logsigma2_old,shape=a,rate=b)*exp(logsigma2_old) # add jacobian adjustment term for the target density
+  
   # calculate acceptance probability
   alpha <- min( den_new_2/den_old_2, 1)
   
   if(runif(1)<=alpha){
-    logsigma2_new <- Y_2
+    logsigma2_new_MH <- Y_2
   }else{
-    logsigma2_new <- logsigma2_old
-  }
-  # burning and thin steps for adjust the convergency and autocorrelation in MCMC samplings
-  if( j > burnin & (j%%thin) == 0){
-    # save new sample
-    beta_post_sample_1[counter,] = beta_new_1
-    logsigma2_post_sample[counter]=logsigma2_new
-    counter = counter + 1
+    logsigma2_new_MH <- logsigma2_old_MH
   }
   
+  # burning and thin steps for adjust the convergence and autocorrelation in MCMC samplings
+  if( j > burnin & (j%%thin) == 0){
+    # save new sample
+    beta_post_sample_1[counter,] = beta_new_MH
+    logsigma2_post_sample[counter]=logsigma2_new_MH
+    counter = counter + 1
+  }
 }
 
 
