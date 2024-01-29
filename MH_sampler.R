@@ -175,14 +175,14 @@ plot( xs, dinvgamma(xs, 0.1, 0.1), type="l" )
 #1/11/2024-------------------------------------------------------------------------------
 #MH for two posterior parameters beta and sigma2(in log transformed) with proposal truncated t distribution 
 #install packages
-install.packages("rtmvt")
+install.packages("MASS")
 install.packages("Matrix")
 install.packages("stats4")
 install.packages("gmm")
 install.packages("sandwich")
 install.packages("tmvtnorm")
-install.packages("crch")
-install.packages("distributions3")
+
+
 
 # data preprocessing steps--------------------------------------------------------------------
 install.packages("dplyr")
@@ -215,10 +215,6 @@ sigma2_new_MH=1 #initial values for sigma2
 logsigma2_new_MH<-log(sigma2_new_MH)#log transform for sigma2
 counter=1
 
-#gamma[1,]<-solve(diag(3)+(1/sigma2_post_sample_1[1])*t(x)%*%x)%*%t(x)%*%y
-#omega[,,1]<-matrix(solve((diag(3)+(1/sigma2_post_sample_1[1])*t(x)%*%x)))
-#a[1]=sample_size/2+alpha
-#b[1]=(t(y-x%*%as.vector(beta_post_sample_1[1,])))%*%(y-x%*%as.vector(beta_post_sample_1[1,]))/2 + beta_prime
 
 #MH algorithm for beta and logsigma2
 
