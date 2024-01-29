@@ -184,8 +184,6 @@ install.packages("sandwich")
 install.packages("tmvtnorm")
 library("stats")
 
-
-
 # data preprocessing steps--------------------------------------------------------------------
 set.seed(100)
 x1<-matrix(c(rep(1, 100)), ncol=1)
@@ -203,7 +201,6 @@ beta_post_sample_1= matrix(0, nrow =n/thin, ncol = 3)
 sigma2_post_sample_1=rep(0, l=n/thin)
 logsigma2_post_sample=rep(0, l=n/thin) #log-transformed sigma2
 
-
 #computation to prepare for prior beta and sigma2
 sample_size=100 # sample sizes from data
 alpha=0.1 # parameters for prior sigma2's inverse_gamma
@@ -215,7 +212,6 @@ sigma2_old_MH=1 #initial values for sigma2
 logsigma2_old_MH<-log(sigma2_old_MH)#log transform for sigma2
 counter=1
 
-
 #MH algorithm for beta and logsigma2
 for (j in 2:(burnin + n) ){
    # beta part
@@ -223,9 +219,12 @@ for (j in 2:(burnin + n) ){
   sigma2_new_MH<-exp(logsigma2_old_MH)
   omega <- solve( diag(3) + t(x)%*%x/sigma2_old_MH )
   gamma  <- omega %*% t(x) %*% y/sigma2_old_MH
-  Y_1 <- as.vector(rtmvt(1, mean = beta_old_MH, sigma = diag(3), df = 1, 
-                          lower = rep(-Inf, length = length(mean)), 
-                          upper = rep(Inf, length = length(mean))))
+  lower_limits <- c(-1,-1,-1)
+  upper_limits <- c(1, 1, 1)
+  Y_1 <- as.vector(rtmvt(1, mean = beta_old_MH, sigma = diag(3), df = 3, 
+                          lower = lower_limits, 
+                          upper = upper_limits))
+  
   # density values: target density is the full conditional distribution of beta which is "multivaraite normal"
   den_new_1 = dmvnorm(Y_1, mean=gamma, sigma=omega)
   den_old_1 = dmvnorm(beta_old_MH,mean=gamma,sigma=omega)
@@ -237,14 +236,14 @@ for (j in 2:(burnin + n) ){
   }else{
     beta_new_MH <- beta_old_MH
   }
-  
+
   # sigma2 (log-transformed) part
   a = sample_size/2 + alpha
   e = y - x%*%as.matrix(beta_new_MH)
   b = as.numeric( crossprod(e)/2 + beta_prime )
   
   #proposal from univariate truncated student t distribution for log-transformed sigma2
-  Y_2 <- rtt(1,location=logsigma2_old, scale=1)
+  Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1)
                    
   # density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
   den_new_2 = dinvgamma(Y_2, shape=a, rate=b)*exp(Y_2) # add jacobian adjustment term for the target density
@@ -271,6 +270,8 @@ for (j in 2:(burnin + n) ){
   logsigma2_old_MH = logsigma2_new_MH
   
 }
+
+
 
 
 
