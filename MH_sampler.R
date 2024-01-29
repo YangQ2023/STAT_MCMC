@@ -175,17 +175,18 @@ plot( xs, dinvgamma(xs, 0.1, 0.1), type="l" )
 #1/11/2024-------------------------------------------------------------------------------
 #MH for two posterior parameters beta and sigma2(in log transformed) with proposal truncated t distribution 
 #install packages
+install.packages("dplyr")
 install.packages("MASS")
 install.packages("Matrix")
 install.packages("stats4")
 install.packages("gmm")
 install.packages("sandwich")
 install.packages("tmvtnorm")
+library("stats")
 
 
 
 # data preprocessing steps--------------------------------------------------------------------
-install.packages("dplyr")
 set.seed(100)
 x1<-matrix(c(rep(1, 100)), ncol=1)
 x2_x3 <- matrix(rnorm(200), nrow = 100, ncol = 2)
@@ -194,7 +195,7 @@ eps<-matrix(rnorm(100),nrow =100, ncol=1)
 beta_1 <- matrix(c(1, 2, 0.5), ncol = 1)
 y<-x%*%beta+eps
 
-#create vector list for beta and sigma2
+#create vector list for beta samplings and sigma2 samplings
 burnin= 500
 thin = 50
 n = 5000*thin
@@ -204,26 +205,24 @@ logsigma2_post_sample=rep(0, l=n/thin) #log-transformed sigma2
 
 
 #computation to prepare for prior beta and sigma2
-library("stats")
 sample_size=100 # sample sizes from data
 alpha=0.1 # parameters for prior sigma2's inverse_gamma
 beta_prime=0.1 # parameters for prior sigma2's inverse_gamma
 
-set.seed(1)
-beta_new_MH = as.vector( beta_1 )
-sigma2_new_MH=1 #initial values for sigma2
-logsigma2_new_MH<-log(sigma2_new_MH)#log transform for sigma2
+#assign initial values for beta and sigma2 before MH_algorithm
+beta_old_MH = as.vector( beta_1 )
+sigma2_old_MH=1 #initial values for sigma2
+logsigma2_old_MH<-log(sigma2_old_MH)#log transform for sigma2
 counter=1
 
 
 #MH algorithm for beta and logsigma2
-
 for (j in 2:(burnin + n) ){
    # beta part
-   # proposal from multivaraite truncated stduent t disbribution
-  sigma2_new_MH<-exp(logsigma2_new_MH)
-  omega_1 <- solve( diag(3) + t(x)%*%x/sigma2_new_MH )
-  gamma_1  <- omega %*% t(x) %*% y/sigma2_new_MH
+   # proposal from multivaraite truncated student t distribution
+  sigma2_new_MH<-exp(logsigma2_old_MH)
+  omega <- solve( diag(3) + t(x)%*%x/sigma2_old_MH )
+  gamma  <- omega %*% t(x) %*% y/sigma2_old_MH
   Y_1 <- as.vector(rtmvt(1, mean = beta_old_MH, sigma = diag(3), df = 1, 
                           lower = rep(-Inf, length = length(mean)), 
                           upper = rep(Inf, length = length(mean))))
@@ -267,6 +266,10 @@ for (j in 2:(burnin + n) ){
     logsigma2_post_sample[counter]=logsigma2_new_MH
     counter = counter + 1
   }
+  
+  beta_old_MH = beta_new_MH
+  logsigma2_old_MH = logsigma2_new_MH
+  
 }
 
 
