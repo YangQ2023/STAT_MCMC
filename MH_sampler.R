@@ -182,6 +182,9 @@ install.packages("stats4")
 install.packages("gmm")
 install.packages("sandwich")
 install.packages("tmvtnorm")
+install.packages("crch")
+install.packages("coda")
+install.packages("MCMCpack")
 library("stats")
 
 # data preprocessing steps--------------------------------------------------------------------
@@ -219,9 +222,10 @@ for (j in 2:(burnin + n) ){
   sigma2_new_MH<-exp(logsigma2_old_MH)
   omega <- solve( diag(3) + t(x)%*%x/sigma2_old_MH )
   gamma  <- omega %*% t(x) %*% y/sigma2_old_MH
-  lower_limits <- c(-1,-1,-1)
-  upper_limits <- c(1, 1, 1)
-  Y_1 <- as.vector(rtmvt(1, mean = beta_old_MH, sigma = diag(3), df = 3, 
+  #set up the truncated range for the each sampling parameter
+  lower_limits <- c(-2,-3,-0.5)
+  upper_limits <- c(2, 3, 0.5)
+  Y_1 <- as.vector(rtmvt(1, mean = beta_old_MH, sigma = diag(3), df = 2, 
                           lower = lower_limits, 
                           upper = upper_limits))
   
@@ -230,6 +234,8 @@ for (j in 2:(burnin + n) ){
   den_old_1 = dmvnorm(beta_old_MH,mean=gamma,sigma=omega)
   # calculate acceptance probability
   alpha <- min( den_new_1/den_old_1, 1)
+  
+
   
   if(runif(1)<=alpha){
     beta_new_MH <- Y_1
@@ -243,12 +249,12 @@ for (j in 2:(burnin + n) ){
   b = as.numeric( crossprod(e)/2 + beta_prime )
   
   #proposal from univariate truncated student t distribution for log-transformed sigma2
-  Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1)
+  Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1, df=1)
                    
   # density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
-  den_new_2 = dinvgamma(Y_2, shape=a, rate=b)*exp(Y_2) # add jacobian adjustment term for the target density
-  den_old_2 = dinvgamma(logsigma2_old,shape=a,rate=b)*exp(logsigma2_old) # add jacobian adjustment term for the target density
-  
+  den_new_2 = dinvgamma(Y_2, shape=a, rate = b)*exp(Y_2) # add jacobian adjustment term for the target density
+  den_old_2 = dinvgamma(logsigma2_old_MH,shape=a,rate = b)*exp(logsigma2_old_MH) # add jacobian adjustment term for the target density
+
   # calculate acceptance probability
   alpha <- min( den_new_2/den_old_2, 1)
   
