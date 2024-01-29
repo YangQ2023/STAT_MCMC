@@ -211,7 +211,7 @@ beta_prime=0.1 # parameters for prior sigma2's inverse_gamma
 
 #assign initial values for beta and sigma2 before MH_algorithm
 beta_old_MH = as.vector( beta_1 )
-sigma2_old_MH=1 #initial values for sigma2
+sigma2_old_MH= 1 #initial values for sigma2
 logsigma2_old_MH<-log(sigma2_old_MH)#log transform for sigma2
 counter=1
 
@@ -235,21 +235,20 @@ for (j in 2:(burnin + n) ){
   # calculate acceptance probability
   alpha <- min( den_new_1/den_old_1, 1)
   
-
-  
   if(runif(1)<=alpha){
     beta_new_MH <- Y_1
   }else{
     beta_new_MH <- beta_old_MH
   }
 
+  
   # sigma2 (log-transformed) part
   a = sample_size/2 + alpha
   e = y - x%*%as.matrix(beta_new_MH)
   b = as.numeric( crossprod(e)/2 + beta_prime )
   
   #proposal from univariate truncated student t distribution for log-transformed sigma2
-  Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1, df=1)
+  Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1, df=1, left=0,right=2)
                    
   # density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
   den_new_2 = dinvgamma(Y_2, shape=a, rate = b)*exp(Y_2) # add jacobian adjustment term for the target density
