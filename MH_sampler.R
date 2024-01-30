@@ -233,7 +233,7 @@ for (j in 2:(burnin + n) ){
   den_new_1 = dmvnorm(Y_1, mean=gamma, sigma=omega)
   den_old_1 = dmvnorm(beta_old_MH,mean=gamma,sigma=omega)
   # calculate acceptance probability
-  alpha <- min( den_new_1/den_old_1, 1)
+  alpha <- min(den_new_1/den_old_1, 1) 
   
   if(runif(1)<=alpha){
     beta_new_MH <- Y_1
@@ -255,7 +255,7 @@ for (j in 2:(burnin + n) ){
   den_old_2 = dinvgamma(logsigma2_old_MH,shape=a,rate = b)*exp(logsigma2_old_MH) # add jacobian adjustment term for the target density
 
   # calculate acceptance probability
-  alpha <- min( den_new_2/den_old_2, 1)
+  alpha <- min(den_new_2/den_old_2, 1, na.rm = TRUE)
   
   if(runif(1)<=alpha){
     logsigma2_new_MH <- Y_2
@@ -275,6 +275,25 @@ for (j in 2:(burnin + n) ){
   logsigma2_old_MH = logsigma2_new_MH
   
 }
+
+par(mfrow=c(1,3))
+hist(beta_post_sample_1[,1])
+hist(beta_post_sample_1[,2])
+hist(beta_post_sample_1[,3])
+acf(beta_post_sample_1[,1])
+acf(beta_post_sample_1[,2])
+acf(beta_post_sample_1[,3])
+
+acf(sigma2_Gibbs_sample )
+mean(sigma2_Gibbs_sample)
+
+
+
+plot(sigma2_post_sample_1)
+plot(beta_post_sample_1[,1])
+plot(beta_post_sample_1[,2])
+plot(beta_post_sample_1[,3])
+
 
 
 
