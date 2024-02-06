@@ -4,6 +4,7 @@ library("stats")
 library(invgamma)#install.packages("invgamma")
 
 
+
 ########### 
 burnin= 500
 thin = 100
