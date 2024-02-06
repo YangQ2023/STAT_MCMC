@@ -26,13 +26,6 @@ beta_post_sample <-  matrix(0, nrow = nmc/thin, ncol = 3)
 logsigma2_post_sample <- rep(0, l = nmc/thin) #log-transformed sigma2
 
 
-# #create list for parameters gamma (vector) and omega(matrtix): parameters needed for target distribution of beta
-# gamma= matrix(0, nrow = n/thin, ncol = 3)
-# omega= replicate(n/thin ,matrix(0, nrow =3, ncol = 3))
-
-# #create vector list for parameters a and b: parameters need for target distribution for sigma2
-# a=rep(0, l=n+burnin)
-# b=rep(0, l=n+burnin)
 
 ###################### Hyper-parameters
 shape <- 0.01 # parameters for prior sigma2's inverse_gamma
