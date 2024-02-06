@@ -39,7 +39,7 @@ logsigma2_old <- 0
 counter <- 1
 
 #XtX <- t(x)%*%x
-XtX <- crossprod(x) # crossprod is much faster than t(x)%*%x
+XtX <- crossprod(x)# crossprod is much faster than t(x)%*%x
 XtY <- crossprod(x,y)
 p <- nrow(XtX)
 # XtX == t(x)%*%x
@@ -52,11 +52,6 @@ p <- nrow(XtX)
 for (j in 1:(burnin + nmc) ){
   # Sampling beta
   # (We don't need truncated distirbution as their support is (-inf,inf) )
-
-  # This way, we need to calculate X'X and X'y for each iteration
-  # That is inefficient because they are constant over ierations.
-  # gamma[j-1,] <- solve(diag(3)+(1/sigma2_post_sample_1[j-1])*t(x)%*%x)%*%t(x)%*%y
-  # omega[,,j-1] <- solve((diag(3)+(1/sigma2_post_sample_1[j-1])*t(x)%*%x))
   
   beta_proposed <- rtmvt(1, mean = beta_old, sigma = diag(3), df = 3,
                          lower = rep(-Inf, length = p), upper = rep(Inf, length = p) )
@@ -97,8 +92,6 @@ for (j in 1:(burnin + nmc) ){
   # note sum(e^2) = t(y - x%*% beta_new)%*%(y - x%*% beta_new)
   logsigma2_old <- log(sigma2_old)
   
-  #proposal from univariate truncated student t distribution for log-transformed sigma2
-  #Y_2 <- rtt(1,location=logsigma2_old, scale=1)
   
   logsigma2_proposed <- rtmvt(1, mean = logsigma2_old, sigma = diag(1), df = 3,
                            lower = rep(-Inf, length = 1), upper = rep(Inf, length = 1) )
