@@ -3,7 +3,6 @@ library(tmvtnorm)
 library("stats")
 library(invgamma)#install.packages("invgamma")
 
-
 ########### 
 burnin= 500
 thin = 100
@@ -35,6 +34,7 @@ set.seed(1)
 
 ############## initial values ####################################
 beta_old <-  as.vector( beta )
+sigma2_old<-1
 logsigma2_old <- 0
 counter <- 1
 
@@ -45,6 +45,7 @@ p <- nrow(XtX)
 # XtX == t(x)%*%x
 # XtY == t(x)%*%y
 
+
 #MH algorithm for beta and logsigma2
 ##################### This is MH within Gibbs sampler #########################
 ####################### we run Gibbs steps, where each Gibbs step runs MH #####
@@ -54,7 +55,7 @@ for (j in 1:(burnin + nmc) ){
   # (We don't need truncated distirbution as their support is (-inf,inf) )
   
   beta_proposed <- rtmvt(1, mean = beta_old, sigma = diag(3), df = 3,
-                         lower = rep(-Inf, length = p), upper = rep(Inf, length = p) )
+                         lower = rep(-Inf, length = p), upper = rep(Inf, length = p) )#??? df=3???
   beta_proposed <- as.vector(beta_proposed)
   
   omega <- solve( diag(3)+(1/sigma2_old)*XtX )
@@ -67,7 +68,7 @@ for (j in 1:(burnin + nmc) ){
   # density values of proposal distribution
   # beta_new | beta_old (new given old)
   prop_den_new <- dtmvt(beta_proposed, mean = beta_old, sigma = diag(3), df = 3,
-                        lower = rep(-Inf, length = p), upper = rep(Inf, length = p) )
+                        lower = rep(-Inf, length = p), upper = rep(Inf, length = p) ) #???
   # beta_old | beta_new (old given new)
   prop_den_old <- dtmvt(beta_old, mean = beta_proposed, sigma = diag(3), df = 3,
                         lower = rep(-Inf, length = p), upper = rep(Inf, length = p) )
@@ -100,10 +101,11 @@ for (j in 1:(burnin + nmc) ){
   # density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
   logsig2_target_den_new <-  dinvgamma(exp(logsigma2_proposed), shape = a, rate = b)*exp(logsigma2_proposed) 
   logsig2_target_den_old <-  dinvgamma(exp(logsigma2_old), shape = a, rate = b)*exp(logsigma2_old) 
-  # calculate acceptance probability
+ 
+   # calculate acceptance probability
   
   logsig2_prop_den_new <- dmvt(logsigma2_proposed - logsigma2_old, sigma = diag(1), df = 3, log=FALSE )
-  logsig2_prop_den_old <- dmvt(logsigma2_old - logsigma2_proposed, sigma = diag(1), df = 3, log=FALSE )
+  logsig2_prop_den_old <- dmvt(logsigma2_old - logsigma2_proposed, sigma = diag(1), df = 3, log=FALSE ) #???
   
   
   # Again, logsig2_prop_den_new == logsig2_prop_den_old
@@ -125,10 +127,10 @@ for (j in 1:(burnin + nmc) ){
     beta_post_sample[counter,] <- beta_new
     logsigma2_post_sample[counter] <- logsigma2_new
     counter = counter + 1
-    if( counter%%10 == 0){ print(counter) }
+    #if( counter%%10 == 0){ print(counter) }#
   }
-
-  beta_old <-  beta_new
+  
+  beta_old <- beta_new
   sigma2_old <- exp(logsigma2_new)
   
 }
