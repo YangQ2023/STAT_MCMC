@@ -175,6 +175,7 @@ plot( xs, dinvgamma(xs, 0.1, 0.1), type="l" )
 #1/11/2024-------------------------------------------------------------------------------
 #MH for two posterior parameters beta and sigma2(in log transformed) with proposal truncated t distribution 
 #install packages
+install.packages("tidyverse")
 install.packages("dplyr")
 install.packages("MASS")
 install.packages("Matrix")
@@ -201,33 +202,33 @@ burnin= 500
 thin = 50
 n = 5000*thin
 beta_post_sample_1= matrix(0, nrow =n/thin, ncol = 3)
-sigma2_post_sample_1=rep(0, l=n/thin)
 logsigma2_post_sample=rep(0, l=n/thin) #log-transformed sigma2
 
 #computation to prepare for prior beta and sigma2
-sample_size=100 # sample sizes from data
+n=100 # sample sizes from data
 alpha=0.1 # parameters for prior sigma2's inverse_gamma
 beta_prime=0.1 # parameters for prior sigma2's inverse_gamma
 
 #assign initial values for beta and sigma2 before MH_algorithm
 beta_old_MH = as.vector( beta_1 )
-sigma2_old_MH= 1/rgamma(1, shape = 0.1, rate = 0.1) #initial values for sigma2
+sigma2_old_MH= 1 #initial values for sigma2
 logsigma2_old_MH<-log(sigma2_old_MH)#log transform for sigma2
 counter=1
+p=nrow(t(x)%*%x)
 
 #MH algorithm for beta and logsigma2
 for (j in 2:(burnin + n) ){
    # beta part
    # proposal from multivaraite truncated student t distribution
-  sigma2_new_MH<-exp(logsigma2_old_MH)
+  sigma2_old_MH<-exp(logsigma2_old_MH)
   omega <- solve( diag(3) + t(x)%*%x/sigma2_old_MH )
   gamma  <- omega %*% t(x) %*% y/sigma2_old_MH
   #set up the truncated range for the each sampling parameter
-  lower_limits <- c(-2,-3,-0.5)
-  upper_limits <- c(2, 3, 0.5)
-  Y_1 <- as.vector(rtmvt(1, mean = beta_old_MH, sigma = diag(3), df = 2, 
-                          lower = lower_limits, 
-                          upper = upper_limits))
+  #lower_limits <- c(-2,-3,-0.5)#???????
+  #upper_limits <- c(2, 3, 0.5)#
+  Y_1 <- rtmvt(1, mean = beta_old_MH, sigma = diag(3), df = 3,
+                         lower = rep(-Inf, length = p), upper = rep(Inf, length = p))
+  Y_1 <- as.vector(Y_1)
   
   # density values: target density is the full conditional distribution of beta which is "multivaraite normal"
   den_new_1 = dmvnorm(Y_1, mean=gamma, sigma=omega)
@@ -248,7 +249,7 @@ for (j in 2:(burnin + n) ){
   b = as.numeric( crossprod(e)/2 + beta_prime )
   
   #proposal from univariate truncated student t distribution for log-transformed sigma2
-  Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1, df=1)
+  Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1, df=1)#???
                    
   # density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
   den_new_2 = dinvgamma(Y_2, shape=a, rate = b)*exp(Y_2) # add jacobian adjustment term for the target density
@@ -293,10 +294,6 @@ plot(sigma2_post_sample_1)
 plot(beta_post_sample_1[,1])
 plot(beta_post_sample_1[,2])
 plot(beta_post_sample_1[,3])
-
-
-
-
 
 
 
