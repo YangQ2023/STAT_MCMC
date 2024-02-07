@@ -244,16 +244,19 @@ for (j in 2:(burnin + n) ){
 
   
   # sigma2 (log-transformed) part
-  a = sample_size/2 + alpha
-  e = y - x%*%as.matrix(beta_new_MH)
+  a = n/2 + alpha
+  e = as.vector(y - x%*%as.matrix(beta_new_MH))
   b = as.numeric( crossprod(e)/2 + beta_prime )
   
   #proposal from univariate truncated student t distribution for log-transformed sigma2
-  Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1, df=1)#???
+  #Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1, df=1)#???#
+  Y_2 <- rtmvt(1, mean = logsigma2_old_MH, sigma = diag(1), df = 3,
+                              lower = rep(-Inf, length = 1), upper = rep(Inf, length = 1) ) #??? why not univarate truncated t disbribution?
+  Y_2 <- as.vector( Y_2 )
                    
   # density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
-  den_new_2 = dinvgamma(Y_2, shape=a, rate = b)*exp(Y_2) # add jacobian adjustment term for the target density
-  den_old_2 = dinvgamma(logsigma2_old_MH,shape=a,rate = b)*exp(logsigma2_old_MH) # add jacobian adjustment term for the target density
+  den_new_2 = dinvgamma(exp(Y_2), shape=a, rate = b)*exp(Y_2) # add jacobian adjustment term for the target density
+  den_old_2 = dinvgamma(exp(logsigma2_old_MH),shape=a,rate = b)*exp(logsigma2_old_MH) # add jacobian adjustment term for the target density
 
   # calculate acceptance probability
   alpha <- min(den_new_2/den_old_2, 1, na.rm = TRUE)
