@@ -95,7 +95,7 @@ for (j in 1:(burnin + nmc) ){
   
   
   logsigma2_proposed <- rtmvt(1, mean = logsigma2_old, sigma = diag(1), df = 3,
-                           lower = rep(-Inf, length = 1), upper = rep(Inf, length = 1) )
+                           lower = rep(-Inf, length = 1), upper = rep(Inf, length = 1) ) #??? why not univarate truncated t disbribution?
   logsigma2_proposed <- as.vector( logsigma2_proposed )
                   
   # density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
@@ -141,7 +141,7 @@ for( jj in 1:p){
   hist( beta_post_sample[,jj], prob=TRUE, main = paste0("Posterior beta",jj))
 }
 hist( exp(logsigma2_post_sample), prob=TRUE, main = "Posterior sigma2")
-
+?hist()
 
 colMeans( beta_post_sample )
 as.vector( beta )
