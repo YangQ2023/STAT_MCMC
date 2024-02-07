@@ -280,7 +280,10 @@ for (j in 2:(burnin + n) ){
   
 }
 
-par(mfrow=c(1,3))
+
+
+
+par(mfrow=c(2,2))
 hist(beta_post_sample_1[,1])
 hist(beta_post_sample_1[,2])
 hist(beta_post_sample_1[,3])
