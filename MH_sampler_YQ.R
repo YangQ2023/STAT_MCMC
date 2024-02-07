@@ -279,27 +279,24 @@ for (j in 2:(burnin + nmc) ){
   
 }
 
-#Error in `[<-`(`*tmp*`, counter, , value = beta_new_MH) : 
- # subscript out of bounds error on 2/7/2024
+
 
 
 par(mfrow=c(2,2))
-hist(beta_post_sample_1[,1])
-hist(beta_post_sample_1[,2])
-hist(beta_post_sample_1[,3])
+hist(beta_post_sample_1[,1], freq=FALSE)
+hist(beta_post_sample_1[,2],freq=FALSE)
+hist(beta_post_sample_1[,3],freq=FALSE)
+hist(exp(logsigma2_post_sample),freq=FALSE)
+
 acf(beta_post_sample_1[,1])
 acf(beta_post_sample_1[,2])
 acf(beta_post_sample_1[,3])
-
-acf(sigma2_Gibbs_sample )
-mean(sigma2_Gibbs_sample)
+acf(logsigm2_post_sample)
 
 
 
-plot(sigma2_post_sample_1)
-plot(beta_post_sample_1[,1])
-plot(beta_post_sample_1[,2])
-plot(beta_post_sample_1[,3])
+
+
 
 
 
