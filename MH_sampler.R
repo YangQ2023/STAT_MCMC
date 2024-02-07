@@ -259,7 +259,7 @@ for (j in 2:(burnin + n) ){
   den_old_2 = dinvgamma(exp(logsigma2_old_MH),shape=a,rate = b)*exp(logsigma2_old_MH) # add jacobian adjustment term for the target density
 
   # calculate acceptance probability
-  alpha <- min(den_new_2/den_old_2, 1, na.rm = TRUE)
+  alpha <- min(den_new_2/den_old_2, 1)
   
   if(runif(1)<=alpha){
     logsigma2_new_MH <- Y_2
