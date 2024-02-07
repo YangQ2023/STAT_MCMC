@@ -200,9 +200,9 @@ y<-x%*%beta+eps
 #create vector list for beta samplings and sigma2 samplings
 burnin= 500
 thin = 50
-n = 5000*thin
-beta_post_sample_1= matrix(0, nrow =n/thin, ncol = 3)
-logsigma2_post_sample=rep(0, l=n/thin) #log-transformed sigma2
+nmc = 5000*thin
+beta_post_sample_1= matrix(0, nrow =nmc/thin, ncol = 3)
+logsigma2_post_sample=rep(0, l=nmc/thin) #log-transformed sigma2
 
 #computation to prepare for prior beta and sigma2
 n=100 # sample sizes from data
@@ -217,7 +217,7 @@ counter=1
 p=nrow(t(x)%*%x)
 
 #MH algorithm for beta and logsigma2
-for (j in 2:(burnin + n) ){
+for (j in 2:(burnin + nmc) ){
    # beta part
    # proposal from multivaraite truncated student t distribution
   sigma2_old_MH<-exp(logsigma2_old_MH)
@@ -241,7 +241,6 @@ for (j in 2:(burnin + n) ){
   }else{
     beta_new_MH <- beta_old_MH
   }
-
   
   # sigma2 (log-transformed) part
   a = n/2 + alpha
@@ -252,7 +251,7 @@ for (j in 2:(burnin + n) ){
   #Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1, df=1)#???#
   Y_2 <- rtmvt(1, mean = logsigma2_old_MH, sigma = diag(1), df = 3,
                               lower = rep(-Inf, length = 1), upper = rep(Inf, length = 1) ) #??? why not univarate truncated t disbribution?
-  Y_2 <- as.vector( Y_2 )
+  Y_2 <- as.vector(Y_2)
                    
   # density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
   den_new_2 = dinvgamma(exp(Y_2), shape=a, rate = b)*exp(Y_2) # add jacobian adjustment term for the target density
@@ -280,7 +279,8 @@ for (j in 2:(burnin + n) ){
   
 }
 
-
+#Error in `[<-`(`*tmp*`, counter, , value = beta_new_MH) : 
+ # subscript out of bounds 
 
 
 par(mfrow=c(2,2))
