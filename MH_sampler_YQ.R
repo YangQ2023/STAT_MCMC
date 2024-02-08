@@ -197,6 +197,9 @@ eps<-matrix(rnorm(100),nrow =100, ncol=1)
 beta_1 <- matrix(c(1, 2, 0.5), ncol = 1)
 y<-x%*%beta+eps
 
+rm(list=ls())
+source("./dataGeneration.R") #2/8/2024
+
 #create vector list for beta samplings and sigma2 samplings
 burnin= 500
 thin = 50
@@ -237,7 +240,7 @@ for (j in 2:(burnin + nmc) ){
   alpha <- min(den_new_1/den_old_1, 1) 
   
   if(runif(1)<=alpha){
-    beta_new_MH <- Y_1
+    beta_new_MH <- Y_1 
   }else{
     beta_new_MH <- beta_old_MH
   }
@@ -301,8 +304,9 @@ acf(logsigm2_post_sample)
 
 
 
+dnorm(20)/dnorm(50)
 
-
+log( runif(1) ) <= ( dnorm(50, log=TRUE) - dnorm(-20, log=TRUE) )
 
 
 
