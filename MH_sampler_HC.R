@@ -30,7 +30,7 @@ logsigma2_post_sample <- rep(0, l = nmc/thin) #log-transformed sigma2
 shape <- 0.01 # parameters for prior sigma2's inverse_gamma
 rate <- 0.01 # parameters for prior sigma2's inverse_gamma
 set.seed(1)
-
+rnorm(100)
 
 ############## initial values ####################################
 beta_old <-  as.vector( beta )
@@ -141,7 +141,6 @@ for( jj in 1:p){
   hist( beta_post_sample[,jj], prob=TRUE, main = paste0("Posterior beta",jj))
 }
 hist( exp(logsigma2_post_sample), prob=TRUE, main = "Posterior sigma2")
-?hist()
 
 colMeans( beta_post_sample )
 as.vector( beta )
@@ -151,7 +150,6 @@ for( jj in 1:p){
   acf(beta_post_sample[,3], main = paste0("Posterior beta",jj))
 }
 acf( logsigma2_post_sample, main = "Posterior sigma2"  )
-
 
 
 
