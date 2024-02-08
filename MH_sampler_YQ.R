@@ -296,16 +296,8 @@ acf(logsigm2_post_sample)
 
 
 
-
-
-
-
-
-
-
-
 dnorm(20)/dnorm(50)
-
+#log scale for calculating the accpetance ratio: more stable
 log( runif(1) ) <= ( dnorm(50, log=TRUE) - dnorm(-20, log=TRUE) )
 
 
