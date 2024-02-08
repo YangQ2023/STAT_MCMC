@@ -198,7 +198,7 @@ beta_1 <- matrix(c(1, 2, 0.5), ncol = 1)
 y<-x%*%beta+eps
 
 rm(list=ls())
-source("./dataGeneration.R") #2/8/2024
+source("./dataGeneration.R") #2/8/2024 make another separate file for storing data and packages
 
 #create vector list for beta samplings and sigma2 samplings
 burnin= 500
