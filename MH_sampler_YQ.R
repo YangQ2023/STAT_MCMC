@@ -280,8 +280,6 @@ for (j in 2:(burnin + nmc) ){
 }
 
 
-
-
 par(mfrow=c(2,2))
 hist(beta_post_sample_1[,1], freq=FALSE)
 hist(beta_post_sample_1[,2],freq=FALSE)
