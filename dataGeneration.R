@@ -19,3 +19,9 @@ x <- cbind(x1, x2_x3)
 eps<-matrix(rnorm(100),nrow =100, ncol=1)
 beta_1 <- matrix(c(1, 2, 0.5), ncol = 1)
 y<-x%*%beta+eps
+
+
+
+
+
+

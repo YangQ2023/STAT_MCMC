@@ -1,15 +1,3 @@
-#exercise
-i=1:10^4
-x[1]=rnorm(1)
-?rnorm
-r=0.9
-for (i in 2:10^4){
-  x[i]=r*x[i-1]+rnorm(1) }
-hist(x,freq=F,col="wheat2",main="")
-curve(dnorm(x,sd=1/sqrt(1-r^2)),add=T,col="tomato")
-nBoot=200
-B=array(0,dim=c(nBoot, 2))
-
 #sampling from cauchy distribution, with proposal density function as "normal"
 
 
@@ -48,6 +36,10 @@ lines(xs, dcauchy(xs), type="l", lwd=2, col = 2)
 
 #Below "random walk" 1/5/2024
 #-----------------------------------------------------------------
+rm(list=ls())
+source("./dataGeneration.R") #2/8/2024 make another separate file for storing data and packages
+?source()
+
 n=1000000
 x=rep(0, l=n)
 x[1]=rnorm(1)
@@ -72,15 +64,7 @@ lines(xs, dcauchy(xs), type="l", lwd=2, col=3)
 
 #--------------------------------------------------------------------------------------------------------
 #1/5/2024 MH for one poesterior parameter beta where sigma2=1 with proposal Multivariate normal distribution
-# data preprocessing steps......
-install.packages("dplyr")
-set.seed(100)
-x1<-matrix(c(rep(1, 100)), ncol=1)
-x2_x3 <- matrix(rnorm(200), nrow = 100, ncol = 2)
-x <- cbind(x1, x2_x3)
-eps<-matrix(rnorm(100),nrow =100, ncol=1)
-beta <- matrix(c(1, 2, 0.5), ncol = 1)
-y<-x%*%beta+eps
+
 
 #1) directly generate 10,000 beta value from posterior disbribution
 sigma2 <- 1
@@ -197,8 +181,6 @@ eps<-matrix(rnorm(100),nrow =100, ncol=1)
 beta_1 <- matrix(c(1, 2, 0.5), ncol = 1)
 y<-x%*%beta+eps
 
-rm(list=ls())
-source("./dataGeneration.R") #2/8/2024 make another separate file for storing data and packages
 
 #create vector list for beta samplings and sigma2 samplings
 burnin= 500
