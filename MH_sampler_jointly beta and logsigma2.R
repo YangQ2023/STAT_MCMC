@@ -29,8 +29,8 @@ for (j in 2:(burnin + nmc) ){
   e_new = y - x%*%as.matrix(Y_2[1:3])
   e_old = y - x%*%as.matrix(beta_logsigma2_old_MH[1:3])
   
-  b_new = as.numeric( crossprod(e_new)/2*exp(Y_2[4]))
-  b_old = as.numeric( crossprod(e_old)/2*exp(beta_logsigma2_old_MH[4]))
+  b_new = as.numeric( crossprod(e_new)/(2*exp(Y_2[4])))
+  b_old = as.numeric( crossprod(e_old)/(2*exp(beta_logsigma2_old_MH[4])))
   
   c_new = as.numeric(crossprod(Y_2[1:3]))/2
   c_old = as.numeric(crossprod(beta_logsigma2_old_MH[4]))/2
@@ -60,13 +60,13 @@ for (j in 2:(burnin + nmc) ){
 
 plot(beta_logsigma2_post_sample_1)
 par(mfrow=c(2,2))
-for( jj in 1:p){
+for( jj in 1:3){
   hist( beta_logsigma2_post_sample_1[,jj], prob=TRUE, main = paste0("Posterior beta and logsigma2",jj))
 }
-hist(exp(beta_logsigma2_post_sample_1[,4]), prob=TRUE)
+hist(exp(beta_logsigma2_post_sample_1[,4]), prob=TRUE,main="posterior sigma2")
 
 par(mfrow=c(2,2))
-for( jj in 1:p){
+for( jj in 1:3){
   acf(beta_logsigma2_post_sample_1[,jj], main = paste0("Posterior beta",jj))
 }
 
