@@ -69,4 +69,3 @@ par(mfrow=c(2,2))
 for( jj in 1:3){
   acf(beta_logsigma2_post_sample_1[,jj], main = paste0("Posterior beta",jj))
 }
-
