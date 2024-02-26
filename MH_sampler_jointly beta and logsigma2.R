@@ -3,14 +3,14 @@ rm(list=ls())
 source("./dataGeneration.R")
 
 #computation to prepare for prior beta and sigma2
-p=4
+#p=4
 burnin= 500
 thin = 50
 nmc = 5000*thin
 n=100 # sample sizes from data
 alpha=0.1 # parameters for prior sigma2's inverse_gamma
 beta_prime=0.1 # parameters for prior sigma2's inverse_gamma
-beta_logsigma2_post_sample_1= matrix(0, nrow =nmc/thin, ncol = 4) # sampling vectors
+beta_logsigma2_post_sample_1= matrix(0, nrow =nmc/thin, ncol = 4) # sampling vectors for four dimensions
 beta_logsigma2_post_1 <- matrix(c(1, 2, 0.5, 1), ncol = 1) #initial values
 
 #assign initial values for beta and sigma2 before MH_algorithm
@@ -29,14 +29,14 @@ for (j in 2:(burnin + nmc) ){
   e_new = y - x%*%as.matrix(Y_2[1:3])
   e_old = y - x%*%as.matrix(beta_logsigma2_old_MH[1:3])
   
-  b_new = as.numeric( crossprod(e_new)/(2*exp(Y_2[4])))
-  b_old = as.numeric( crossprod(e_old)/(2*exp(beta_logsigma2_old_MH[4])))
+  b_new = as.numeric(crossprod(e_new))/(2*exp(Y_2[4]))
+  b_old = as.numeric(crossprod(e_old))/(2*exp(beta_logsigma2_old_MH[4]))
   
   c_new = as.numeric(crossprod(Y_2[1:3]))/2
-  c_old = as.numeric(crossprod(beta_logsigma2_old_MH[4]))/2
+  c_old = as.numeric(crossprod(beta_logsigma2_old_MH[1:3]))/2
   
-  log_den_new = (-n/2-alpha+1)*Y_2[4] - b_new - c_new - (beta_prime/exp(Y_2[4]))
-  log_den_old = (-n/2-alpha+1)*beta_logsigma2_old_MH[4] - b_old - c_old - (beta_prime/exp(beta_logsigma2_old_MH[4]))
+  log_den_new = (-(n/2)-alpha+1)*Y_2[4] - b_new - c_new - (beta_prime/exp(Y_2[4]))
+  log_den_old = (-(n/2)-alpha+1)*beta_logsigma2_old_MH[4] - b_old - c_old - (beta_prime/exp(beta_logsigma2_old_MH[4]))
   
   # calculate acceptance probability in log scale
   log_alpha <- (log_den_new - log_den_old) 
@@ -61,7 +61,7 @@ for (j in 2:(burnin + nmc) ){
 plot(beta_logsigma2_post_sample_1)
 par(mfrow=c(2,2))
 for( jj in 1:3){
-  hist( beta_logsigma2_post_sample_1[,jj], prob=TRUE, main = paste0("Posterior beta and logsigma2",jj))
+  hist( beta_logsigma2_post_sample_1[,jj], prob=TRUE, main = paste0("Posterior beta",jj))
 }
 hist(exp(beta_logsigma2_post_sample_1[,4]), prob=TRUE,main="posterior sigma2")
 
@@ -69,3 +69,5 @@ par(mfrow=c(2,2))
 for( jj in 1:3){
   acf(beta_logsigma2_post_sample_1[,jj], main = paste0("Posterior beta",jj))
 }
+
+acf(exp(beta_logsigma2_post_sample_1[4]), main = "sigma2")
