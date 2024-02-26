@@ -4,7 +4,7 @@ source("./dataGeneration.R")
 
 #computation to prepare for prior beta and sigma2
 #p=4
-burnin= 500
+burnin= 1000
 thin = 50
 nmc = 5000*thin
 n=100 # sample sizes from data
