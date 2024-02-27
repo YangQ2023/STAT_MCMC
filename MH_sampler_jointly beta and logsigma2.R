@@ -17,6 +17,21 @@ beta_logsigma2_post_1 <- matrix(c(1, 2, 0.5, 1), ncol = 1) #initial values
 beta_logsigma2_old_MH = as.vector(beta_logsigma2_post_1)
 counter=1
 
+log_target = function(beta, tau2){
+  
+  e = y - x%*%beta
+  
+  b = crossprod(e)/(2*exp(tau2))
+  
+  c = crossprod(beta)/2
+  
+  log_den = (-(n/2)-alpha+1)*tau2 - b_new - c_new - (beta_prime/exp(tau2))
+  
+  return(log_den)
+  
+}
+
+
 #MH algorithm for beta and logsigma2 
 for (j in 2:(burnin + nmc) ){
   # proposal from multivariate student t distribution 
@@ -69,4 +84,6 @@ par(mfrow=c(2,2))
 for( jj in 1:3){
   acf(beta_logsigma2_post_sample_1[,jj], main = paste0("Posterior beta",jj))
 }
-acf(exp(beta_logsigma2_post_sample_1[4]), main = "sigma2")
+acf(exp(beta_logsigma2_post_sample_1[,4]), main = "sigma2")
+dev.off()
+plot(exp(beta_logsigma2_post_sample_1[,4]), cex=0.5)
