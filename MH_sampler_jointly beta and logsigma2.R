@@ -19,13 +19,13 @@ counter=1
 
 log_target = function(beta, tau2){
   
-  e = y - x%*%beta
+  e = y - x%*%as.matrix(beta)
   
   b = crossprod(e)/(2*exp(tau2))
   
   c = crossprod(beta)/2
   
-  log_den = (-(n/2)-alpha+1)*tau2 - b_new - c_new - (beta_prime/exp(tau2))
+  log_den = (-(n/2)-alpha+1)*tau2 - b - c - (beta_prime/exp(tau2))
   
   return(log_den)
   
