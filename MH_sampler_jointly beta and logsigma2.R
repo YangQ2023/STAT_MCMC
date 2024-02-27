@@ -52,7 +52,7 @@ for (j in 2:(burnin + nmc) ){
   }else{
     beta_logsigma2_new_MH <- beta_logsigma2_old_MH
   }
-  
+
   # burning and thin steps for adjust the convergence and autocorrelation in MCMC samplings
   if( j > burnin & (j%%thin) == 0){
     # save new sample
