@@ -63,7 +63,7 @@ par(mfrow=c(2,2))
 for( jj in 1:3){
   hist( beta_logsigma2_post_sample_1[,jj], prob=TRUE, main = paste0("Posterior beta",jj))
 }
-hist(exp(beta_logsigma2_post_sample_1[,4]), prob=TRUE,main="posterior sigma2")
+hist(exp(beta_logsigma2_post_sample_1[,4]), prob=TRUE,main="sigma2")
 
 par(mfrow=c(2,2))
 for( jj in 1:3){
