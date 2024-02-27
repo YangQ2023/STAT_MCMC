@@ -76,5 +76,11 @@ for( jj in 1:3){
   acf(beta_logsigma2_post_sample_1[,jj], main = paste0("Posterior beta",jj))
 }
 acf(exp(beta_logsigma2_post_sample_1[,4]), main = "sigma2")
+
 dev.off()
-plot(exp(beta_logsigma2_post_sample_1[,4]), cex=0.5)
+#due to using identical proposal density function lead to kindly high rejection from the sampling. Use Hessian matrix to replace the identity matrix
+#in the proposal density function, to solve this high rejection issues.
+plot(exp(beta_logsigma2_post_sample_1[,1]), cex=0.5)
+plot(exp(beta_logsigma2_post_sample_1[,2]), cex=0.5) 
+plot(exp(beta_logsigma2_post_sample_1[,3]), cex=0.5) 
+plot(exp(beta_logsigma2_post_sample_1[,4]), cex=0.5) 
