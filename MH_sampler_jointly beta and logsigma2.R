@@ -17,6 +17,7 @@ beta_logsigma2_post_1 <- matrix(c(1, 2, 0.5, 1), ncol = 1) #initial values
 beta_logsigma2_old_MH = as.vector(beta_logsigma2_post_1)
 counter=1
 
+#define log_target functions to make calculation accurate and efficiency
 log_target = function(beta, tau2){
   
   e = y - x%*%as.matrix(beta)
@@ -31,7 +32,6 @@ log_target = function(beta, tau2){
   
 }
 
-
 #MH algorithm for beta and logsigma2 
 for (j in 2:(burnin + nmc) ){
   # proposal from multivariate student t distribution 
@@ -41,17 +41,8 @@ for (j in 2:(burnin + nmc) ){
   Y_2 <- as.vector(Y_2)
   
   # target density--------------------------------------------
-  e_new = y - x%*%as.matrix(Y_2[1:3])
-  e_old = y - x%*%as.matrix(beta_logsigma2_old_MH[1:3])
-  
-  b_new = crossprod(e_new)/(2*exp(Y_2[4]))
-  b_old = crossprod(e_old)/(2*exp(beta_logsigma2_old_MH[4]))
- 
-  c_new = crossprod(Y_2[1:3])/2
-  c_old = crossprod(beta_logsigma2_old_MH[1:3])/2
-  
-  log_den_new = (-(n/2)-alpha+1)*Y_2[4] - b_new - c_new - (beta_prime/exp(Y_2[4]))
-  log_den_old = (-(n/2)-alpha+1)*beta_logsigma2_old_MH[4] - b_old - c_old - (beta_prime/exp(beta_logsigma2_old_MH[4]))
+  log_den_new = log_target(Y_2[1:3],Y_2[4])
+  log_den_old = log_target(beta_logsigma2_old_MH[1:3],beta_logsigma2_old_MH[4])
   
   # calculate acceptance probability in log scale
   log_alpha <- (log_den_new - log_den_old) 
