@@ -26,7 +26,7 @@ log_target = function(beta, tau2){
   
   c = crossprod(beta)/2
   
-  log_den = (-(n/2)-alpha+1)*tau2 - b - c - (beta_prime/exp(tau2))
+  log_den = (-(n/2)-alpha)*tau2 - b - c - (beta_prime/exp(tau2))
   
   return(log_den)
   
