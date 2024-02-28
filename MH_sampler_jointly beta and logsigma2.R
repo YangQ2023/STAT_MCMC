@@ -64,11 +64,6 @@ for (i in 2:(burnin + nmc) ){
   
 }
 
-
-
-
-
-
 plot(beta_logsigma2_post_sample_1)
 par(mfrow=c(2,2))
 for( jj in 1:3){
