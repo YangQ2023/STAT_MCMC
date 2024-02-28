@@ -33,7 +33,7 @@ log_target = function(beta, tau2){
 }
 
 #MH algorithm for beta and logsigma2 
-for (j in 2:(burnin + nmc) ){
+for (i in 2:(burnin + nmc) ){
   # proposal from multivariate student t distribution 
   #set up the parameters for proposal multivariate_student t distribution
   Y_2 <- rtmvt(1, mean = beta_logsigma2_old_MH, sigma = diag(4), df = 3,
@@ -54,7 +54,7 @@ for (j in 2:(burnin + nmc) ){
   }
 
   # burning and thin steps for adjust the convergence and autocorrelation in MCMC samplings
-  if( j > burnin & (j%%thin) == 0){
+  if( i > burnin & (i%%thin) == 0){
     # save new sample
     beta_logsigma2_post_sample_1[counter,] = beta_logsigma2_new_MH
     counter = counter + 1
@@ -63,6 +63,11 @@ for (j in 2:(burnin + nmc) ){
   beta_logsigma2_old_MH = beta_logsigma2_new_MH
   
 }
+
+
+
+
+
 
 plot(beta_logsigma2_post_sample_1)
 par(mfrow=c(2,2))
