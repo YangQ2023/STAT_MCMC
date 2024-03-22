@@ -1,6 +1,4 @@
 #sampling from cauchy distribution, with proposal density function as "normal"
-
-
 n=1000000
 x=rep(0, l=n)
 x[1]=rnorm(1)
@@ -33,13 +31,8 @@ xx = rcauchy(100000)
 hist( xx[abs(xx)<30], prob = TRUE, 1000, xlim=c(-10,10))
 lines(xs, dcauchy(xs), type="l", lwd=2, col = 2)
 
-
 #Below "random walk" 1/5/2024
 #-----------------------------------------------------------------
-rm(list=ls())
-source("./dataGeneration.R") #2/8/2024 make another separate file for storing data and packages
-?source()
-
 n=1000000
 x=rep(0, l=n)
 x[1]=rnorm(1)
@@ -62,10 +55,10 @@ hist(x[abs(x)<30],100,freq=F,col="red",main="",xlim=c(-10,10))
 xs = seq(-10,10,l=5000)
 lines(xs, dcauchy(xs), type="l", lwd=2, col=3)
 
-#--------------------------------------------------------------------------------------------------------
-#1/5/2024 MH for one poesterior parameter beta where sigma2=1 with proposal Multivariate normal distribution
-
-
+#1/5/2024-------------------------------------------------------------------
+#MH for one poesterior parameter beta where sigma2=1 with proposal Multivariate normal distribution
+rm(list=ls())
+source("./dataGeneration.R")
 #1) directly generate 10,000 beta value from posterior disbribution
 sigma2 <- 1
 gamma<-(solve(diag(3)+(1/sigma2)*t(x)%*%x)%*%t(x)%*%y)/sigma2
@@ -81,6 +74,7 @@ beta_2<-hist(sample_beta_1[,2],freq=F)
 beta_3<-hist(sample_beta_1[,3],freq=F)
 
 #2)MH sampler for beta values-----------1/11/2024
+rm(list=ls())
 install.packages("mvtnorm")
 install.packages("ggplot2")
 library("mvtnorm")
@@ -88,13 +82,7 @@ burnin = 500
 thin = 50
 n = 5000*thin
 beta_post_sample <- matrix(0, nrow = n/thin, ncol = 3)
-
-
 beta_old = as.vector( gamma )
-
-#assign another gamma inital values as 0 0 0, try another chain
-#gamma1 <- matrix(0, nrow = 1, ncol = 3)
-#beta_old=as.vector(gamma1)
 counter = 1
 
 for (j in 1:(burnin + n) ){
@@ -122,30 +110,16 @@ for (j in 1:(burnin + n) ){
   
 }
 
-
-beta = beta_post_sample
-beta_1_MH<-hist(beta[,1],freq=F,xlim=c(0,2))
-acf(beta[,1])
-mean(beta[,1])
-var(beta[,1])
-beta_2_MH<-hist(beta[,2],freq=F)
-acf(beta[,2])
-beta_3_MH<-hist(beta[,3],freq=F,xlim=c(0,1.5))
-
-
-plot( beta_1, col=rgb(0,0,1,1/4), xlim=c(-4,4))  # first histogram
-plot( beta_1_MH, col=rgb(1,0,0,1/4), xlim=c(-4,4), add=TRUE)  
+par(mfrow=c(1,3))
+for( jj in 1:3){
+  hist( beta_post_sample [,jj], prob=TRUE, main = paste0("Posterior beta",jj))
+}
 
 
 par(mfrow=c(1,3))
-hist(sample_beta_1[,1],freq=F, col=rgb(0,0,1,1/4), xlim=c(0,2), ylim=c(0,5) )
-hist(beta[,1], freq=F, col=rgb(1,0,0,1/4), xlim=c(0,2), add=TRUE)
-
-hist(sample_beta_1[,2],freq=F, col=rgb(0,0,1,1/4), xlim=c(1.2,2.8), ylim=c(0,5) )
-hist(beta[,2], freq=F, col=rgb(1,0,0,1/4), xlim=c(0,2), add=TRUE)
-
-hist(sample_beta_1[,3],freq=F, col=rgb(0,0,1,1/4), xlim=c(0,1), ylim=c(0,5) )
-hist(beta[,3], freq=F, col=rgb(1,0,0,1/4), xlim=c(0,2), add=TRUE)
+for( jj in 1:3){
+  acf( beta_post_sample [,jj], prob=TRUE, main = paste0("Posterior beta",jj))
+}
 
 
 
@@ -153,34 +127,12 @@ library(invgamma)#install.packages("invgamma")
 dev.off()
 ?dev.off()
 xs= seq(0,20,l=1000)
-
 plot( xs, dinvgamma(xs, 0.1, 0.1), type="l" )
 
 #1/11/2024-------------------------------------------------------------------------------
 #MH for two posterior parameters beta and sigma2(in log transformed) with proposal truncated t distribution 
-#install packages
-install.packages("tidyverse")
-install.packages("dplyr")
-install.packages("MASS")
-install.packages("Matrix")
-install.packages("stats4")
-install.packages("gmm")
-install.packages("sandwich")
-install.packages("tmvtnorm")
-install.packages("crch")
-install.packages("coda")
-install.packages("MCMCpack")
-library("stats")
-
-# data preprocessing steps--------------------------------------------------------------------
-set.seed(100)
-x1<-matrix(c(rep(1, 100)), ncol=1)
-x2_x3 <- matrix(rnorm(200), nrow = 100, ncol = 2)
-x <- cbind(x1, x2_x3)
-eps<-matrix(rnorm(100),nrow =100, ncol=1)
-beta_1 <- matrix(c(1, 2, 0.5), ncol = 1)
-y<-x%*%beta+eps
-
+rm(list=ls())
+source("./dataGeneration.R")
 
 #create vector list for beta samplings and sigma2 samplings
 burnin= 500
@@ -195,7 +147,7 @@ alpha=0.1 # parameters for prior sigma2's inverse_gamma
 beta_prime=0.1 # parameters for prior sigma2's inverse_gamma
 
 #assign initial values for beta and sigma2 before MH_algorithm
-beta_old_MH = as.vector( beta_1 )
+beta_old_MH = as.vector( beta)
 sigma2_old_MH= 1 #initial values for sigma2
 logsigma2_old_MH<-log(sigma2_old_MH)#log transform for sigma2
 counter=1
@@ -204,18 +156,16 @@ p=nrow(t(x)%*%x)
 #MH algorithm for beta and logsigma2
 for (j in 2:(burnin + nmc) ){
    # beta part
-   # proposal from multivaraite truncated student t distribution
+   # proposal from Multivariate student t distribution
   sigma2_old_MH<-exp(logsigma2_old_MH)
   omega <- solve( diag(3) + t(x)%*%x/sigma2_old_MH )
   gamma  <- omega %*% t(x) %*% y/sigma2_old_MH
   #set up the truncated range for the each sampling parameter
-  #lower_limits <- c(-2,-3,-0.5)#???????
-  #upper_limits <- c(2, 3, 0.5)#
   Y_1 <- rtmvt(1, mean = beta_old_MH, sigma = diag(3), df = 3,
                          lower = rep(-Inf, length = p), upper = rep(Inf, length = p))
   Y_1 <- as.vector(Y_1)
   
-  # density values: target density is the full conditional distribution of beta which is "multivaraite normal"
+  # density values: target density is the full conditional distribution of beta which is "Multivariate normal"
   den_new_1 = dmvnorm(Y_1, mean=gamma, sigma=omega)
   den_old_1 = dmvnorm(beta_old_MH,mean=gamma,sigma=omega)
   # calculate acceptance probability
@@ -230,18 +180,15 @@ for (j in 2:(burnin + nmc) ){
   # sigma2 (log-transformed) part
   a = n/2 + alpha
   e = as.vector(y - x%*%as.matrix(beta_new_MH))
-  b = as.numeric( crossprod(e)/2 + beta_prime )
+  b = as.numeric(crossprod(e)/2 + beta_prime)
   
   #proposal from univariate truncated student t distribution for log-transformed sigma2
-  #Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1, df=1)#???#
   Y_2 <- rtmvt(1, mean = logsigma2_old_MH, sigma = diag(1), df = 3,
-                              lower = rep(-Inf, length = 1), upper = rep(Inf, length = 1) ) #??? why not univarate truncated t disbribution?
+                              lower = rep(-Inf, length = 1), upper = rep(Inf, length = 1) ) 
   Y_2 <- as.vector(Y_2)
-                   
-  # density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
-  den_new_2 = dinvgamma(exp(Y_2), shape=a, rate = b)*exp(Y_2) # add jacobian adjustment term for the target density
-  den_old_2 = dinvgamma(exp(logsigma2_old_MH),shape=a,rate = b)*exp(logsigma2_old_MH) # add jacobian adjustment term for the target density
-
+     
+  den_new_2 = dinvgamma(exp(Y_2), shape=a, rate = b)*exp(Y_2) # add Jacobian adjustment term for the target density
+  den_old_2 = dinvgamma(exp(logsigma2_old_MH),shape=a,rate = b)*exp(logsigma2_old_MH) # add Jacobian adjustment term for the target density
   # calculate acceptance probability
   alpha <- min(den_new_2/den_old_2, 1)
   
@@ -251,7 +198,6 @@ for (j in 2:(burnin + nmc) ){
     logsigma2_new_MH <- logsigma2_old_MH
   }
   
-  # burning and thin steps for adjust the convergence and autocorrelation in MCMC samplings
   if( j > burnin & (j%%thin) == 0){
     # save new sample
     beta_post_sample_1[counter,] = beta_new_MH
@@ -266,23 +212,107 @@ for (j in 2:(burnin + nmc) ){
 
 
 par(mfrow=c(2,2))
-hist(beta_post_sample_1[,1], freq=FALSE)
-hist(beta_post_sample_1[,2],freq=FALSE)
-hist(beta_post_sample_1[,3],freq=FALSE)
-hist(exp(logsigma2_post_sample),freq=FALSE)
+for( jj in 1:3){
+  hist( beta_post_sample_1[,jj], prob=TRUE, main = paste0("Posterior beta",jj))
+}
+hist((logsigma2_post_sample), prob=TRUE,main="logsigma2")
 
-acf(beta_post_sample_1[,1])
-acf(beta_post_sample_1[,2])
-acf(beta_post_sample_1[,3])
-acf(logsigm2_post_sample)
+par(mfrow=c(2,2))
+for( jj in 1:3){
+  acf(beta_post_sample_1[,jj], main = paste0("Posterior beta",jj))
+}
+acf((logsigma2_post_sample), main = "logsigma2")
 
 
 
+#--------------------------------------------------------------------------
 dnorm(20)/dnorm(50)
 #log scale for calculating the accpetance ratio: more stable
 log( runif(1) ) <= ( dnorm(50, log=TRUE) - dnorm(-20, log=TRUE) )
 
+#2/9/2024----------------------------------------------------------------------------
+#MH for jointly beta and logsigma2
+rm(list=ls())
+source("./dataGeneration.R")
 
+#computation to prepare for prior beta and sigma2
+burnin= 500
+thin = 50
+nmc = 5000*thin
+n=100 # sample sizes from data
+alpha=0.1 # parameters for prior sigma2's inverse_gamma
+beta_prime=0.1 # parameters for prior sigma2's inverse_gamma
+beta_logsigma2_post_sample_1= matrix(0, nrow =nmc/thin, ncol = 4)
+beta_logsigma2_post_1 <- matrix(c(1, 2, 0.5, 1), ncol = 1)
+
+#assign initial values for beta and sigma2 before MH_algorithm
+beta_logsigma2_old_MH = as.vector( beta_logsigma2_post_1 )
+counter=1
+
+#MH algorithm for beta and logsigma2 
+for (j in 2:(burnin + nmc) ){
+  # proposal from multivariate student t distribution 
+  #set up the parameters for proposal multivariate_student t distribution
+  Y_2 <- rtmvt(1, mean = beta_logsigma2_old_MH, sigma = diag(4), df = 3,
+               lower = rep(-Inf, length = 4), upper = rep(Inf, length = 4))
+  Y_2 <- as.vector(Y_2)
+  
+  # density values: target density--------------------------------------------
+  e_new = y - x%*%as.matrix(Y_2[1:3])
+  e_old = y - x%*%as.matrix(beta_logsigma2_old_MH[1:3])
+  
+  b_new = as.numeric( crossprod(e_new)/2*exp(Y_2[4]))
+  b_old = as.numeric( crossprod(e_old)/2*exp(beta_logsigma2_old_MH[4]))
+  
+  c_new = as.numeric(crossprod(Y_2[1:3]))
+  c_old = as.numeric(crossprod(beta_logsigma2_old_MH[4]))
+  
+  log_den_new = (-n/2-alpha+1)*Y_2[4] - b_new - c_new - (beta_prime/exp(Y_2[4]))
+  log_den_old = (-n/2-alpha+1)*beta_logsigma2_old_MH[4] - b_old - c_old - (beta_prime/exp(beta_logsigma2_old_MH[4]))
+  
+  # calculate acceptance probability
+  log_alpha <- (log_den_new - log_den_old) 
+  
+  if(log(runif(1))<=log_alpha){
+    beta_logsigma2_new_MH <- Y_2 
+  }else{
+    beta_logsigma2_new_MH <- beta_logsigma2_old_MH
+  }
+  
+  # burning and thin steps for adjust the convergence and autocorrelation in MCMC samplings
+  if( j > burnin & (j%%thin) == 0){
+    # save new sample
+    beta_logsigma2_post_sample_1[counter,] = beta_logsigma2_new_MH
+    counter = counter + 1
+  }
+  
+  beta_logsigma2_old_MH = beta_logsigma2_new_MH
+  
+}
+
+# sigma2 (log-transformed) part
+a = n/2 + alpha
+e = as.vector(y - x%*%as.matrix(beta_new_MH))
+b = as.numeric( crossprod(e)/2 + beta_prime )
+
+#proposal from univariate truncated student t distribution for log-transformed sigma2
+#Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1, df=1)#???#
+Y_2 <- rtmvt(1, mean = logsigma2_old_MH, sigma = diag(1), df = 3,
+             lower = rep(-Inf, length = 1), upper = rep(Inf, length = 1) ) #??? why not univarate truncated t disbribution?
+Y_2 <- as.vector(Y_2)
+
+# density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
+den_new_2 = dinvgamma(exp(Y_2), shape=a, rate = b)*exp(Y_2) # add jacobian adjustment term for the target density
+den_old_2 = dinvgamma(exp(logsigma2_old_MH),shape=a,rate = b)*exp(logsigma2_old_MH) # add jacobian adjustment term for the target density
+
+# calculate acceptance probability
+alpha <- min(den_new_2/den_old_2, 1)
+
+if(runif(1)<=alpha){
+  logsigma2_new_MH <- Y_2
+}else{
+  logsigma2_new_MH <- logsigma2_old_MH
+}
 
 
 
