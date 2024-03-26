@@ -75,9 +75,11 @@ beta_3<-hist(sample_beta_1[,3],freq=F)
 
 #2)MH sampler for beta values-----------1/11/2024
 rm(list=ls())
+source("./dataGeneration.R")
 install.packages("mvtnorm")
 install.packages("ggplot2")
 library("mvtnorm")
+set.seed(100)
 burnin = 500
 thin = 50
 n = 5000*thin
@@ -109,18 +111,32 @@ for (j in 1:(burnin + n) ){
   beta_old = beta_new
   
 }
+install.packages("repr")
+library(repr)
 
-par(mfrow=c(1,3))
-for( jj in 1:3){
-  hist( beta_post_sample [,jj], prob=TRUE, main = paste0("Posterior beta",jj))
+# Set figure size
+options(repr.plot.width = 20, repr.plot.height = 15)
+
+# Create a new plot area with 2 rows and 3 columns
+par(mfrow = c(2, 3))
+
+# Loop to create histograms for the first row
+for (jj in 1:3) {
+  # Set graphical parameters for smaller caption
+  par(cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2)
+  
+  # Create histogram plot
+  hist(beta_post_sample[, jj], prob = TRUE, main = paste0("Posterior beta", jj))
 }
 
-
-par(mfrow=c(1,3))
-for( jj in 1:3){
-  acf( beta_post_sample [,jj], prob=TRUE, main = paste0("Posterior beta",jj))
+# Loop to create ACF plots for the second row
+for (jj in 1:3) {
+  # Set graphical parameters for smaller caption
+  par(cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2)
+  
+  # Create ACF plot
+  acf(beta_post_sample[, jj], main = paste0("Posterior beta", jj))
 }
-
 
 
 library(invgamma)#install.packages("invgamma")
