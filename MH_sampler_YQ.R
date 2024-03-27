@@ -116,8 +116,6 @@ for (j in 1:(burnin + n) ){
   beta_old = beta_new
   
 }
-install.packages("repr")
-library(repr)
 
 # Set figure size
 options(repr.plot.width = 20, repr.plot.height = 15)
@@ -134,7 +132,7 @@ for (jj in 1:3) {
   hist(beta_post_sample[, jj], prob = TRUE, main = paste0("Posterior beta", jj))
   
   # Add vertical lines at x=3, x=4, x=5
-  abline(v = c(1, 2, 0.5), col = "red", lty = 1, lwd = c(1, 2, 3))
+  abline(v = c(1, 2, 0.5), col = "red", lty = 1, lwd = c(2, 2, 2))
 }
 
 # Loop to create ACF plots for the second row
