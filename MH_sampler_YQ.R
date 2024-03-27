@@ -84,8 +84,13 @@ burnin = 500
 thin = 50
 n = 5000*thin
 beta_post_sample <- matrix(0, nrow = n/thin, ncol = 3)
-beta_old = as.vector( gamma )
+beta_old = as.vector( beta )
 counter = 1
+
+sigma2 <- 1
+gamma<-(solve(diag(3)+(1/sigma2)*t(x)%*%x)%*%t(x)%*%y)/sigma2
+omega<-solve(diag(3)+(1/sigma2)*t(x)%*%x)
+
 
 for (j in 1:(burnin + n) ){
   # proposal
@@ -127,6 +132,9 @@ for (jj in 1:3) {
   
   # Create histogram plot
   hist(beta_post_sample[, jj], prob = TRUE, main = paste0("Posterior beta", jj))
+  
+  # Add vertical lines at x=3, x=4, x=5
+  abline(v = c(1, 2, 0.5), col = "red", lty = 1, lwd = c(1, 2, 3))
 }
 
 # Loop to create ACF plots for the second row
@@ -137,13 +145,6 @@ for (jj in 1:3) {
   # Create ACF plot
   acf(beta_post_sample[, jj], main = paste0("Posterior beta", jj))
 }
-
-
-library(invgamma)#install.packages("invgamma")
-dev.off()
-?dev.off()
-xs= seq(0,20,l=1000)
-plot( xs, dinvgamma(xs, 0.1, 0.1), type="l" )
 
 #1/11/2024-------------------------------------------------------------------------------
 #MH for two posterior parameters beta and sigma2(in log transformed) with proposal truncated t distribution 
