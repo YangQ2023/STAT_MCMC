@@ -19,7 +19,7 @@ V <- sigmasq*I + XXt
 
 
 ## log density of sigmasq | y
--(a+1)*log(sigmasq) - b/sigmasq + -0.5*determinant(V)$mod[1] - sum( y*solve(V,y) )/(2) # Q1: why not log(determinant(V)$mod[1])?
+-(a+1)*log(sigmasq) - b/sigmasq + -0.5*determinant(V)$mod[1] - sum( y*solve(V,y) )/(2) 
 
 #check density values for equation of log density of sigmasq |y##################
 dinvgamma(sigmasq, shape=a, rate=b, log=TRUE)
@@ -39,16 +39,13 @@ M <- Ip + XtX/sigmasq
 determinant(V)$mod[1]
 
 # p x p determinant
-n*log(sigmasq) + determinant(M)$mod[1] # Q2: why not log(determinant(M)$mod[1])?
+n*log(sigmasq) + determinant(M)$mod[1] 
 
 # p x p determinant is much faster
 microbenchmark::microbenchmark(determinant(V)$mod[1], n*log(sigmasq) + determinant(M)$mod[1])
 
 -(a+1)*log(sigmasq) - b/sigmasq + -0.5*determinant(V)$mod[1] - sum( y*solve(V,y) )/(2)
 -(a+1)*log(sigmasq) - b/sigmasq + -0.5*( n*log(sigmasq) + determinant(M)$mod[1] ) - sum( y*solve(V,y) )/(2)
-
-
-
 
 
 
