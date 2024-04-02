@@ -1,3 +1,5 @@
+rm(list=ls())
+source("./dataGeneration.R")
 library(invgamma)
 library(mvtnorm)
 a=0.1
@@ -8,16 +10,16 @@ p <- 3
 I <- diag(n)
 y <- rnorm(n)
 X <- matrix(rnorm(n*p),n,p)
+dim(X)
 # y = e where e ~ N(0,1)
-# precalculation
+# precalculatyion
 XXt <- X%*%t(X)
-
-
+dim(XXt)
 V <- sigmasq*I + XXt
 
 
 ## log density of sigmasq | y
--(a+1)*log(sigmasq) - b/sigmasq + -0.5*determinant(V)$mod[1] - sum( y*solve(V,y) )/(2)
+-(a+1)*log(sigmasq) - b/sigmasq + -0.5*determinant(V)$mod[1] - sum( y*solve(V,y) )/(2) # Q1: why not log(determinant(V)$mod[1])?
 
 dinvgamma(sigmasq, shape=a, rate=b, log=TRUE)
 -(a+1)*log(sigmasq) - b/sigmasq + (a*log(b) - log(gamma(a)) )
@@ -102,7 +104,7 @@ logden_tausq(pmode)  - dnorm(pmode, pmode, sqrt(pvar), log=TRUE )
 
 logC <-  58
 
-(logC+logden_tausq(pmode))  < ( dnorm(pmode, pmode, sqrt(pvar), log=TRUE )  )
+(logC+logden_tausq(pmode))  < (dnorm(pmode, pmode, sqrt(pvar), log=TRUE ))
 
 
 (logC+logden_tausq(pmode)) / dnorm(pmode, pmode, sqrt(pvar), log=TRUE )  
@@ -167,9 +169,9 @@ pmode + rt( 1, df=5 )*sqrt(pvar)
 ###############################################################################
 tausq_sample <- rep(0,1e5)
 
-# rs <- 
+# rs#####################################################################
 counter <- 0
-while( counter < 1e5){
+while(counter < 1e5){
   
   proposal <- pmode + rt( 1, df=5 )*sqrt(pvar)
   logratio <- logden_tausq(proposal) + logC - ( log_prop_den(proposal) + log(1.5) )
