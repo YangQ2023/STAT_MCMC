@@ -58,8 +58,7 @@ Vtau <- sigmasq*I + XXt # Q1: for the sigmasq part is it not exp(tausq) ?
 -a*tausq - b/exp(tausq) + -0.5*determinant(Vtau)$mod[1] - sum( y*solve(Vtau,y) )/(2)
 -a*tausq - b/exp(tausq) + -0.5*( n*tausq + determinant(Mtau)$mod[1] ) - sum( y*solve(Vtau,y) )/(2)
 
-
-
+################################################################################################
 logden_tausq <- function(tausq){
 
   sigmasq <- exp(tausq)
