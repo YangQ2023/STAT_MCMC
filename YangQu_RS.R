@@ -44,15 +44,16 @@ n*log(sigmasq) + determinant(M)$mod[1]
 # p x p determinant is much faster
 microbenchmark::microbenchmark(determinant(V)$mod[1], n*log(sigmasq) + determinant(M)$mod[1])
 
+#replaced the lower dimension matrix to the high dimension matrix for fast calculation#########
 -(a+1)*log(sigmasq) - b/sigmasq + -0.5*determinant(V)$mod[1] - sum( y*solve(V,y) )/(2)
 -(a+1)*log(sigmasq) - b/sigmasq + -0.5*( n*log(sigmasq) + determinant(M)$mod[1] ) - sum( y*solve(V,y) )/(2)
 
 
 
-# variable transformation 
+# variable transformation #######################################################################
 tausq <- log(sigmasq)
 Mtau <- Ip + XtX/exp(tausq)
-Vtau <- sigmasq*I + XXt
+Vtau <- sigmasq*I + XXt # Q1: for the sigmasq part is it not exp(tausq) ?
 -(a+1)*tausq - b/exp(tausq) + -0.5*determinant(Vtau)$mod[1] - sum( y*solve(Vtau,y) )/(2) + tausq
 -a*tausq - b/exp(tausq) + -0.5*determinant(Vtau)$mod[1] - sum( y*solve(Vtau,y) )/(2)
 -a*tausq - b/exp(tausq) + -0.5*( n*tausq + determinant(Mtau)$mod[1] ) - sum( y*solve(Vtau,y) )/(2)
