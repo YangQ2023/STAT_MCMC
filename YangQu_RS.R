@@ -51,9 +51,10 @@ microbenchmark::microbenchmark(determinant(V)$mod[1], n*log(sigmasq) + determina
 
 
 # variable transformation #######################################################################
+sigmasq <- exp(tausq)
 tausq <- log(sigmasq)
 Mtau <- Ip + XtX/exp(tausq)
-Vtau <- sigmasq*I + XXt # Q1: for the sigmasq part is it not exp(tausq) ?
+Vtau <- sigmasq*I + XXt 
 -(a+1)*tausq - b/exp(tausq) + -0.5*determinant(Vtau)$mod[1] - sum( y*solve(Vtau,y) )/(2) + tausq
 -a*tausq - b/exp(tausq) + -0.5*determinant(Vtau)$mod[1] - sum( y*solve(Vtau,y) )/(2)
 -a*tausq - b/exp(tausq) + -0.5*( n*tausq + determinant(Mtau)$mod[1] ) - sum( y*solve(Vtau,y) )/(2)
@@ -73,13 +74,11 @@ logden_tausq <- function(tausq){
 
 }
 
-
 tausqs <- seq(-2,4,l=1000)
 par(mfrow=c(1,2))
 plot( tausqs, Vectorize(logden_tausq)(tausqs), type="l")
 plot( tausqs, exp( Vectorize(logden_tausq)(tausqs) ), type="l")
 dev.off()
-
 
 ## find the posterior mode
 pmode <- optimize(logden_tausq, c(-0.3,0.3), maximum = TRUE )$maximum
