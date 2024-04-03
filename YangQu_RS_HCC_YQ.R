@@ -197,7 +197,6 @@ while(counter < 1e5){
 #3: In beta_sample[counter] <- mvrnorm(1, mu = gamma_rs, Sigma = omega_rs) :
   #number of items to replace is not a multiple of replacement length
 
-
 ##################################################################################################
 plot( tausq_sample, cex=0.01 )
 hist( tausq_sample, 100, prob=TRUE)
