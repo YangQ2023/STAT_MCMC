@@ -207,7 +207,6 @@ den_tausq <- function(x){
   val <- exp( logden_tausq(x) )
 }
 
-
 inte <- integrate(Vectorize(den_tausq), lower=-1, upper=1)
 # normalizing constant
 nc <- 1/inte$value
