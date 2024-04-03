@@ -100,7 +100,7 @@ plot(tausqs, dnorm(tausqs, pmode, sqrt(pvar) ), type="l", col = 4)
 
 logden_tausq(pmode)  - dnorm(pmode, pmode, sqrt(pvar), log=TRUE) 
 
-logC <-  58 #Q2 why choose logC<-58?
+logC <-  58 
 
 (logC+logden_tausq(pmode))  < (dnorm(pmode, pmode, sqrt(pvar), log=TRUE))
 
@@ -132,13 +132,13 @@ plot( tausqs, dt( (tausqs - pmode)/sqrt(pvar), df=5  ), type="l", col = 4)
 logC <- 57
   
 plot( tausqs, exp( logC  + Vectorize(logden_tausq)(tausqs) ), type="l")
-lines( tausqs, 1.5*dt( (tausqs - pmode)/sqrt(pvar), df=5  ), type="l", col = 4) #Q3 why choose 1.5 as the M???
+lines( tausqs, 1.5*dt( (tausqs - pmode)/sqrt(pvar), df=5  ), type="l", col = 4) #Q2 why choose 1.5 as the M???
 
 
 plot( tausqs,  exp( logC + Vectorize(logden_tausq)(tausqs) ), type="l", ylim=c(0,1e-3), xlim=c(1,1.5) )
 lines( tausqs, 1.5*dt( (tausqs - pmode)/sqrt(pvar), df=5  ) , type="l", col = 4, ylim=c(0,1e-3), xlim=c(1,1.5))
 
-1/1.5 #Q4 why we need this line ????
+1/1.5 #Q3 why we need this line ????
 
 #######################################################
 log_prop_den <- function(x){
@@ -156,7 +156,7 @@ sample_prop <- function(){
 }
 
 
-pmode + rt(1, df=5 )*sqrt(pvar) #Q5 confused on this line???
+pmode + rt(1, df=5 )*sqrt(pvar) #Q4 confused on this line???
 
 # E( pmode + rt( 1, df=5 )*sqrt(pvar) ) = pmode
 # Var( pmode + rt( 1, df=5 )*sqrt(pvar) ) =  Var( rt( 1, df=5 )*sqrt(pvar) )
@@ -184,6 +184,18 @@ while(counter < 1e5){
     beta_sample[counter] <- mvrnorm(1, mu = gamma_rs, Sigma = omega_rs)
   }
 }
+
+#errors based on above codes######################################
+#Error in mvrnorm(1, mu = gamma_rs, Sigma = omega_rs) : 
+  'Sigma' #is not positive definite
+
+#In addition: Warning messages:
+  #1: In beta_sample[counter] <- mvrnorm(1, mu = gamma_rs, Sigma = omega_rs) :
+ # number of items to replace is not a multiple of replacement length
+#2: In beta_sample[counter] <- mvrnorm(1, mu = gamma_rs, Sigma = omega_rs) :
+  #number of items to replace is not a multiple of replacement length
+#3: In beta_sample[counter] <- mvrnorm(1, mu = gamma_rs, Sigma = omega_rs) :
+  #number of items to replace is not a multiple of replacement length
 
 
 ##################################################################################################
