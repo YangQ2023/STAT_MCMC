@@ -224,24 +224,33 @@ for (j in 2:(burnin + nmc) ){
   logsigma2_old_MH = logsigma2_new_MH
   
 }
-
-
+#########################################################################
+dev.off()
 par(mfrow=c(2,2))
-for( jj in 1:3){
-  hist( beta_post_sample_1[,jj], prob=TRUE, main = paste0("Posterior beta",jj))
-}
-hist((logsigma2_post_sample), prob=TRUE,main="logsigma2")
+hist(beta_post_sample_1[, 1], prob = TRUE, 
+     main = paste0("Posterior beta1"))
+abline(v = 1, col = "red", lty = 1, lwd = 2)
 
+
+hist(beta_post_sample_1[, 2], prob = TRUE, 
+     main = paste0("Posterior beta2"))
+abline(v = 2, col = "red", lty = 1, lwd = 2)
+
+
+hist(beta_post_sample_1[, 3], prob = TRUE, 
+     main = paste0("Posterior beta3"))
+abline(v = 0.5, col = "red", lty = 1, lwd = 2)
+
+
+hist(exp(logsigma2_post_sample), prob=TRUE,main="sigma2")
+abline(v = 1, col = "red", lty = 1, lwd = 2)
+
+##################################################################################
 par(mfrow=c(2,2))
 for( jj in 1:3){
   acf(beta_post_sample_1[,jj], main = paste0("Posterior beta",jj))
 }
 acf((logsigma2_post_sample), main = "logsigma2")
-
-
-
-
-
 
 #--------------------------------------------------------------------------
 dnorm(20)/dnorm(50)
