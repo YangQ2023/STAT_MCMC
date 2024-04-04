@@ -182,10 +182,14 @@ while(counter < 1e5){
     # Computation for beta part based on proposal
     gamma_rs <- (solve(diag(3) + (1 / exp(proposal)) * t(X)%*%X) %*% t(X)%*%y) / (exp(proposal))
     omega_rs <- solve(diag(3) + (1 / exp(proposal)) * t(X)%*%X)
-    beta_sample[counter] <- mvrnorm(1, mu = gamma_rs, Sigma = omega_rs)
+    beta_sample[counter,] <- as.vector(mvrnorm(1, mu = gamma_rs, Sigma = omega_rs))
   }
 }
 
+plot(beta_sample[,1])
+hist( beta_sample[,1], 100, prob=TRUE)
+hist( beta_sample[,2], 100, prob=TRUE)
+hist( beta_sample[,3], 100, prob=TRUE)
 ##################################################################################################
 plot( tausq_sample, cex=0.01 )
 hist( tausq_sample, 100, prob=TRUE)
