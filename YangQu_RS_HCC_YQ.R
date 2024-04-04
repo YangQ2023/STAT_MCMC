@@ -81,7 +81,7 @@ dev.off()
 
 ## find the posterior mode: define the potential mean and varaicne of the posterior distribution########
 pmode <- optimize(logden_tausq, c(-0.3,0.3), maximum = TRUE )$maximum
-pmode <- optimize(logden_tausq, c(-0.5,0.5), maximum = TRUE )$maximum #Q1; why change the area from 0.3 to 0.5 produce different pmode?
+pmode <- optimize(logden_tausq, c(-0.5,0.5), maximum = TRUE )$maximum #Q1; why change the area from 0.3 to 0.5 produced different pmode?
 pvar <- as.numeric( -1/numDeriv::hessian(logden_tausq, pmode))
 
 dev.off()
@@ -132,13 +132,13 @@ plot( tausqs, dt( (tausqs - pmode)/sqrt(pvar), df=5  ), type="l", col = 4)
 logC <- 57
   
 plot( tausqs, exp( logC  + Vectorize(logden_tausq)(tausqs) ), type="l")
-lines( tausqs, 1.5*dt( (tausqs - pmode)/sqrt(pvar), df=5  ), type="l", col = 4) #Q2 why choose 1.5 as the M???
+lines( tausqs, 1.5*dt( (tausqs - pmode)/sqrt(pvar), df=5  ), type="l", col = 4) #Q2 Is "1.5" the constant "M" in rejection sampling? Why we selected 1.5 specifically??
 
 
 plot( tausqs,  exp( logC + Vectorize(logden_tausq)(tausqs) ), type="l", ylim=c(0,1e-3), xlim=c(1,1.5) )
 lines( tausqs, 1.5*dt( (tausqs - pmode)/sqrt(pvar), df=5  ) , type="l", col = 4, ylim=c(0,1e-3), xlim=c(1,1.5))
 
-1/1.5 #Q3 why we need this line ????
+1/1.5 #Q3 why we need this line ???
 
 #######################################################
 log_prop_den <- function(x){
@@ -156,7 +156,7 @@ sample_prop <- function(){
 }
 
 
-pmode + rt(1, df=5 )*sqrt(pvar) #Q4 confused on this line???
+pmode + rt(1, df=5 )*sqrt(pvar) #Q4 confused on this line??
 
 # E( pmode + rt( 1, df=5 )*sqrt(pvar) ) = pmode
 # Var( pmode + rt( 1, df=5 )*sqrt(pvar) ) =  Var( rt( 1, df=5 )*sqrt(pvar) )
@@ -171,7 +171,7 @@ counter <- 0
 while(counter < 1e5){
   
   proposal <- pmode + rt(1, df=5 )*sqrt(pvar)
-  logratio <- logden_tausq(proposal) + logC - (log_prop_den(proposal) + log(1.5)) 
+  logratio <- logden_tausq(proposal) + logC - (log_prop_den(proposal) + log(1.5)) #Q5 why is "+" log(1.5) instead of "-" ??
   logu <- log(runif(1))
 
   if( logu < logratio){
@@ -179,8 +179,8 @@ while(counter < 1e5){
     tausq_sample[counter] <- proposal
     
     # Computation for beta part based on proposal
-    gamma_rs <- (solve(diag(3) + (1 / proposal) * t(X) %*% X) %*% t(X) %*% y) / proposal
-    omega_rs <- solve(diag(3) + (1 / proposal) * t(X) %*% X)
+    gamma_rs <- (solve(diag(3) + (1 / exp(proposal)) * t(X) %*% X) %*% t(X) %*% y) / (exp(proposal))
+    omega_rs <- solve(diag(3) + (1 / exp(proposal)) * t(X) %*% X)
     beta_sample[counter] <- mvrnorm(1, mu = gamma_rs, Sigma = omega_rs)
   }
 }
