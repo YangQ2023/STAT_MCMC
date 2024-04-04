@@ -67,27 +67,32 @@ for(j in 1:(burnin + n) ) {
   sigma2_old_gibbs=sigma2_new_gibbs
 }
 #-----------------------------------------------------------------------------------------
+dev.off()
+par(mfrow=c(2,2))
+hist(beta_Gibbs_sample[, 1], prob = TRUE, 
+     main = paste0("Posterior beta1"))
+abline(v = 1, col = "red", lty = 1, lwd = 2)
 
-par(mfrow=c(1,3))
-hist(beta_Gibbs_sample[,1])
-hist(beta_Gibbs_sample[,2])
-hist(beta_Gibbs_sample[,3])
-acf(beta_Gibbs_sample[,3])
 
-acf(sigma2_Gibbs_sample )
-mean(sigma2_Gibbs_sample)
-hist(sigma2_Gibbs_sample,freq=F)
+hist(beta_Gibbs_sample[, 2], prob = TRUE, 
+     main = paste0("Posterior beta2"))
+abline(v = 2, col = "red", lty = 1, lwd = 2)
 
-plot(sigma2_Gibbs_sample)
-hist(sigma2_Gibbs_sample,freq=F)
 
-plot(gamma)
+hist(beta_Gibbs_sample[, 3], prob = TRUE, 
+     main = paste0("Posterior beta3"))
+abline(v = 0.5, col = "red", lty = 1, lwd = 2)
 
-sigma2_Gibbs_sample
-acf(sigma2_Gibbs_sample)
-hist(sigma2_Gibbs_sample,freq=F)
-hist(beta_Gibbs_sample[,3],freq=F)
-acf(beta_Gibbs_sample[,3])
-beta_Gibbs_sample
+
+hist(sigma2_Gibbs_sample, prob=TRUE,main="sigma2")
+abline(v = 1, col = "red", lty = 1, lwd = 2)
+
+##################################################################################
+par(mfrow=c(2,2))
+for( jj in 1:3){
+  acf(beta_Gibbs_sample[,jj], main = paste0("Posterior beta",jj))
+}
+acf((sigma2_Gibbs_sample), main = "sigma2")
+
 
 
