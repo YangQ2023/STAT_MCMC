@@ -26,7 +26,7 @@ log_target = function(beta, tau2){
   
   c = crossprod(beta)/2
   
-  log_den = (-(n/2)-alpha)*tau2 - b - c - (beta_prime/exp(tau2))
+  log_den = (-(n/2)-alpha+1)*tau2 - b - c - (beta_prime/exp(tau2))
   
   return(log_den)
   
@@ -68,8 +68,13 @@ plot(beta_logsigma2_post_sample_1)
 par(mfrow=c(2,2))
 for( jj in 1:3){
   hist( beta_logsigma2_post_sample_1[,jj], prob=TRUE, main = paste0("Posterior beta",jj))
+  abline(v = c(1, 2, 0.5), col = "red", lty = 1, lwd = c(2, 2, 2))
 }
 hist(exp(beta_logsigma2_post_sample_1[,4]), prob=TRUE,main="sigma2")
+abline(v = 1, col = "red", lty = 1, lwd = 2)
+
+
+
 
 par(mfrow=c(2,2))
 for( jj in 1:3){
