@@ -1,6 +1,7 @@
 rm(list=ls())
 library(invgamma)
 library(mvtnorm)
+
 a=0.1
 b=0.1
 sigmasq <- 2
@@ -179,24 +180,11 @@ while(counter < 1e5){
     tausq_sample[counter] <- proposal
     
     # Computation for beta part based on proposal
-    gamma_rs <- (solve(diag(3) + (1 / exp(proposal)) * t(X) %*% X) %*% t(X) %*% y) / (exp(proposal))
-    omega_rs <- solve(diag(3) + (1 / exp(proposal)) * t(X) %*% X)
+    gamma_rs <- (solve(diag(3) + (1 / exp(proposal)) * t(X)%*%X) %*% t(X)%*%y) / (exp(proposal))
+    omega_rs <- solve(diag(3) + (1 / exp(proposal)) * t(X)%*%X)
     beta_sample[counter] <- mvrnorm(1, mu = gamma_rs, Sigma = omega_rs)
   }
 }
-
-#errors based on above codes######################################
-#Error in mvrnorm(1, mu = gamma_rs, Sigma = omega_rs) : 
-  'Sigma' #is not positive definite
-
-#In addition: Warning messages:
-  #1: In beta_sample[counter] <- mvrnorm(1, mu = gamma_rs, Sigma = omega_rs) :
- # number of items to replace is not a multiple of replacement length
-#2: In beta_sample[counter] <- mvrnorm(1, mu = gamma_rs, Sigma = omega_rs) :
-  #number of items to replace is not a multiple of replacement length
-#3: In beta_sample[counter] <- mvrnorm(1, mu = gamma_rs, Sigma = omega_rs) :
-  #number of items to replace is not a multiple of replacement length
-
 
 ##################################################################################################
 plot( tausq_sample, cex=0.01 )
