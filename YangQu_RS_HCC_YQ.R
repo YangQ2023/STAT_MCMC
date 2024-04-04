@@ -23,7 +23,7 @@ V <- sigmasq*I + XXt
 
 #check density values for equation of log density of sigmasq |y##################
 dinvgamma(sigmasq, shape=a, rate=b, log=TRUE)
--(a+1)*log(sigmasq) - b/sigmasq + (a*log(b) - log(gamma(a)) )
+-(a+1)*log(sigmasq) - b/sigmasq + (a*log(b) - log(gamma(a)))
 
 -0.5*determinant(V)$mod[1] - sum( y*solve(V,y) )/(2) + (-n/2)*log(2*pi)
 dmvnorm(y, mean=rep(0,n), V, log=TRUE)
@@ -81,10 +81,8 @@ plot( tausqs, exp( Vectorize(logden_tausq)(tausqs) ), type="l")
 dev.off()
 
 ## find the posterior mode: define the potential mean and varaicne of the posterior distribution########
-pmode <- optimize(logden_tausq, c(-0.3,0.3), maximum = TRUE )$maximum
-pmode <- optimize(logden_tausq, c(-0.5,0.5), maximum = TRUE )$maximum #Q1; why change the area from 0.3 to 0.5 produced different pmode?
+pmode <- optimize(logden_tausq, c(-0.3,0.3), maximum = TRUE )$maximum  #Q1; if I change the c(-0.3,0.3) to c(-0.5,0.5), will the pmode value change?
 pvar <- as.numeric( -1/numDeriv::hessian(logden_tausq, pmode))
-
 dev.off()
 
 ################## normal is not a good proposal 
@@ -172,7 +170,7 @@ counter <- 0
 while(counter < 1e5){
   
   proposal <- pmode + rt(1, df=5 )*sqrt(pvar)
-  logratio <- logden_tausq(proposal) + logC - (log_prop_den(proposal) + log(1.5)) #Q5 why is "+" log(1.5) instead of "-" ??
+  logratio <- logden_tausq(proposal) + logC - (log_prop_den(proposal) + log(1.5))  #Q5 why is "+" log(1.5) instead of "-" ??
   logu <- log(runif(1))
 
   if( logu < logratio){
@@ -186,13 +184,13 @@ while(counter < 1e5){
   }
 }
 
-plot(beta_sample[,1])
+##################################################################################################
+par(mfrow=c(2,2))
 hist( beta_sample[,1], 100, prob=TRUE)
 hist( beta_sample[,2], 100, prob=TRUE)
 hist( beta_sample[,3], 100, prob=TRUE)
-##################################################################################################
 plot( tausq_sample, cex=0.01 )
-hist( tausq_sample, 100, prob=TRUE)
+hist( exp(tausq_sample), 100, prob=TRUE)
 
 # un-normalize density of tau2
 den_tausq <- function(x){
@@ -203,9 +201,8 @@ inte <- integrate(Vectorize(den_tausq), lower=-1, upper=1)
 # normalizing constant
 nc <- 1/inte$value
 
-hist( tausq_sample, 100, prob=TRUE)
+hist( tausq_sample, 100, prob=TRUE,ylim=c(0,3))
 lines( tausqs,  nc*exp( Vectorize(logden_tausq)(tausqs) ), type="l", col=2, lwd=2 )
-
 
 ###############################################################################
 
