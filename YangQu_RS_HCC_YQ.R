@@ -186,11 +186,24 @@ while(counter < 1e5){
 
 ##################################################################################################
 par(mfrow=c(2,2))
-hist( beta_sample[,1], 100, prob=TRUE)
-hist( beta_sample[,2], 100, prob=TRUE)
-hist( beta_sample[,3], 100, prob=TRUE)
+for (jj in 1:3) {
+  # Set graphical parameters for smaller caption
+  par(cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2)
+  
+  # Create histogram plot
+  hist(beta_sample[, jj], prob = TRUE, main = paste0("Posterior beta", jj))
+  
+  # Add vertical lines at x=3, x=4, x=5
+  abline(v = c(0, 0, 0), col = "red", lty = 1, lwd = c(2, 2, 2))
+}
+
+par(mfrow=c(2,2))
+hist( beta_sample[,1], prob=TRUE)
+hist( beta_sample[,2], prob=TRUE)
+hist( beta_sample[,3], prob=TRUE)
 plot( tausq_sample, cex=0.01 )
-hist( exp(tausq_sample), 100, prob=TRUE)
+hist( exp(tausq_sample), prob=TRUE)
+abline(v=1,col = "red", lty = 1, lwd = 2)
 
 # un-normalize density of tau2
 den_tausq <- function(x){
