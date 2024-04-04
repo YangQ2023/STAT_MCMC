@@ -240,94 +240,13 @@ acf((logsigma2_post_sample), main = "logsigma2")
 
 
 
+
+
+
 #--------------------------------------------------------------------------
 dnorm(20)/dnorm(50)
 #log scale for calculating the accpetance ratio: more stable
 log( runif(1) ) <= ( dnorm(50, log=TRUE) - dnorm(-20, log=TRUE) )
-
-#2/9/2024----------------------------------------------------------------------------
-#MH for jointly beta and logsigma2
-rm(list=ls())
-source("./dataGeneration.R")
-
-#computation to prepare for prior beta and sigma2
-burnin= 500
-thin = 50
-nmc = 5000*thin
-n=100 # sample sizes from data
-alpha=0.1 # parameters for prior sigma2's inverse_gamma
-beta_prime=0.1 # parameters for prior sigma2's inverse_gamma
-beta_logsigma2_post_sample_1= matrix(0, nrow =nmc/thin, ncol = 4)
-beta_logsigma2_post_1 <- matrix(c(1, 2, 0.5, 1), ncol = 1)
-
-#assign initial values for beta and sigma2 before MH_algorithm
-beta_logsigma2_old_MH = as.vector( beta_logsigma2_post_1 )
-counter=1
-
-#MH algorithm for beta and logsigma2 
-for (j in 2:(burnin + nmc) ){
-  # proposal from multivariate student t distribution 
-  #set up the parameters for proposal multivariate_student t distribution
-  Y_2 <- rtmvt(1, mean = beta_logsigma2_old_MH, sigma = diag(4), df = 3,
-               lower = rep(-Inf, length = 4), upper = rep(Inf, length = 4))
-  Y_2 <- as.vector(Y_2)
-  
-  # density values: target density--------------------------------------------
-  e_new = y - x%*%as.matrix(Y_2[1:3])
-  e_old = y - x%*%as.matrix(beta_logsigma2_old_MH[1:3])
-  
-  b_new = as.numeric( crossprod(e_new)/2*exp(Y_2[4]))
-  b_old = as.numeric( crossprod(e_old)/2*exp(beta_logsigma2_old_MH[4]))
-  
-  c_new = as.numeric(crossprod(Y_2[1:3]))
-  c_old = as.numeric(crossprod(beta_logsigma2_old_MH[4]))
-  
-  log_den_new = (-n/2-alpha+1)*Y_2[4] - b_new - c_new - (beta_prime/exp(Y_2[4]))
-  log_den_old = (-n/2-alpha+1)*beta_logsigma2_old_MH[4] - b_old - c_old - (beta_prime/exp(beta_logsigma2_old_MH[4]))
-  
-  # calculate acceptance probability
-  log_alpha <- (log_den_new - log_den_old) 
-  
-  if(log(runif(1))<=log_alpha){
-    beta_logsigma2_new_MH <- Y_2 
-  }else{
-    beta_logsigma2_new_MH <- beta_logsigma2_old_MH
-  }
-  
-  # burning and thin steps for adjust the convergence and autocorrelation in MCMC samplings
-  if( j > burnin & (j%%thin) == 0){
-    # save new sample
-    beta_logsigma2_post_sample_1[counter,] = beta_logsigma2_new_MH
-    counter = counter + 1
-  }
-  
-  beta_logsigma2_old_MH = beta_logsigma2_new_MH
-  
-}
-
-# sigma2 (log-transformed) part
-a = n/2 + alpha
-e = as.vector(y - x%*%as.matrix(beta_new_MH))
-b = as.numeric( crossprod(e)/2 + beta_prime )
-
-#proposal from univariate truncated student t distribution for log-transformed sigma2
-#Y_2 <- rtt(1,location=logsigma2_old_MH, scale=1, df=1)#???#
-Y_2 <- rtmvt(1, mean = logsigma2_old_MH, sigma = diag(1), df = 3,
-             lower = rep(-Inf, length = 1), upper = rep(Inf, length = 1) ) #??? why not univarate truncated t disbribution?
-Y_2 <- as.vector(Y_2)
-
-# density values: target density is the full conditional distribution of sigma2 which is "inverse_gamma", since we did log transformed, so need to add jacobian adjustment
-den_new_2 = dinvgamma(exp(Y_2), shape=a, rate = b)*exp(Y_2) # add jacobian adjustment term for the target density
-den_old_2 = dinvgamma(exp(logsigma2_old_MH),shape=a,rate = b)*exp(logsigma2_old_MH) # add jacobian adjustment term for the target density
-
-# calculate acceptance probability
-alpha <- min(den_new_2/den_old_2, 1)
-
-if(runif(1)<=alpha){
-  logsigma2_new_MH <- Y_2
-}else{
-  logsigma2_new_MH <- logsigma2_old_MH
-}
 
 
 
